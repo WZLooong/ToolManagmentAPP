@@ -1,0 +1,133 @@
+
+
+### **更新后的 .cursorules 文件**
+```yaml
+# .cursorules 文件：定义代码规范、依赖管理和安全策略（基于 Android 14 标准）
+
+# ----------------------
+# 代码质量与风格规范
+# ----------------------
+code_style:
+  kotlin:
+    enforce_null_safety: true       
+    max_line_length: 100             # 缩短行长度以适应移动端阅读
+    use_camel_case_for_identifiers: true
+    coroutines:
+      avoid_blocking_on_main_thread: true  # 禁止协程在主线程阻塞
+    compose:
+      enforce_single_composable_per_file: true  # Compose 组件单文件原则
+  android:
+    resources:
+      enforce_vector_drawables: true        # 强制使用 VectorDrawable
+      forbid_hardcoded_strings: true         # 禁止硬编码字符串，需使用 @string
+      image_dimensions:
+        min_dpi: 48                          # 图标最小 DPI 要求
+  java:
+    use_google_java_format: true
+    junit_jupiter: true                     # 强制使用 JUnit 5
+
+# ----------------------
+# 依赖管理
+# ----------------------
+dependencies:
+  blocked_versions:
+    - "com.android.support:*"               # 全面禁止 Support Library
+    - "com.google.firebase:firebase-core:<=21.0.0"  # 限制 Firebase 旧版本
+  recommended:
+    - "androidx.activity:activity-compose:1.6.+"  # Compose 组件依赖
+    - "androidx.room:room-ktx:2.6.+"         # Room 持久化库
+  vulnerability_scanning:
+    tool: dependabot                        # 集成 Dependabot 每周扫描
+    frequency: weekly
+  local_dependencies:
+    forbid_local_jars: true                  # 禁止使用本地 JAR 包
+
+# ----------------------
+# 安全策略
+# ----------------------
+security:
+  data_encryption:
+    user_data: AES-256-GCM
+    logs: RSA-2048-OAEP
+    biometric_data: AES-256-CBC             # 生物识别数据单独加密
+  network:
+    enforce_https: true
+    disable_cleartext_traffic: true
+    tls_min_version: 1.3                     # 最低 TLS 版本要求
+  permissions:
+    required:
+      - android.permission.INTERNET
+      - android.permission.CAMERA
+      - android.permission.NFC               # NFC 工具识别
+    optional:
+      - android.permission.ACCESS_FINE_LOCATION:
+          reason: "工具交接时记录位置"       # 权限使用原因说明
+    forbidden:
+      - android.permission.READ_PHONE_STATE   # 禁止读取通话状态
+  biometric_auth:
+    require_strong_authentication: true      # 指纹/面部识别需结合锁屏密码
+
+# ----------------------
+# 测试与部署
+# ----------------------
+testing:
+  required_coverage:
+    unit_tests: 85%
+    instrumented_tests: 70%
+    compose_preview_tests: true              # 强制测试 Compose 预览状态
+  performance:
+    min_fps: 50                              # 关键页面（如工具列表）FPS 不低于50
+    memory_leak_check: true
+  test_frameworks:
+    - junit:5.10.+"
+    - androidx.compose.ui.tooling.preview:1.6.+  # Compose 预览测试
+deployment:
+  release_signing:
+    keystore_password_policy:
+      min_length: 16
+      require_special_characters: true
+      require_numbers: true
+    enforce_proper_keys: true
+  rollback_strategy: canary_with_monitoring  # 金丝雀部署+实时监控
+  environment_separation:
+    config_files:
+      - "app/src/{debug,staging,release}/res/values/config.xml"  # 三环境隔离
+
+# ----------------------
+# 团队协作规范
+# ----------------------
+collaboration:
+  code_reviews:
+    required_before_merge: true
+    reviewers_per_pr: 2
+    checklists:
+      - "是否遵循单一职责原则"
+      - "是否为新增功能添加 UI 测试"
+      - "Compose 组件是否添加 accessibility 标签"
+  branch_naming:
+    pattern: "feature/[A-Za-z0-9]{4}-[a-z0-9-]+$"  # 规范分支名格式
+  commit_message:
+    enforce_conventional_commits: true
+    scope_validation:
+      - "tool-management"
+      - "auth"
+  branch_protection:
+    main:
+      require_ci_pass: true
+      require_code_reviews: true
+
+# ----------------------
+# 自定义规则（航空领域专项）
+# ----------------------
+custom_rules:
+  - id: tool_serial_no_encryption
+    description: "工具序列号必须加密存储"
+    scope: "src/main/java/com/aircraft/toolmanagment/data/entity/Tool.kt"
+    pattern: "var serialNumber: String"
+    severity: error
+    message: "工具序列号需使用 @Encrypted 注解"
+  - id: no_flight_critical_logging
+    description: "禁止记录航班关键数据到本地日志"
+    pattern: "Log.d\\(.*(flight\\d+|aircraft\\w+).*\\)"
+    severity: warning
+    exclude: "src/test/"
