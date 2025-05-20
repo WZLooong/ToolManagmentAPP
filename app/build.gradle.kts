@@ -44,7 +44,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.ui.tooling)
-    implementation(libs.androidx.core.ktx) // 重复依赖，建议移除
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
