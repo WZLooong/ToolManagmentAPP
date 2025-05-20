@@ -1,3 +1,4 @@
+// 注意：构建文件已更改，可能需要重新加载才能生效
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -43,7 +44,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.ui.tooling)
-    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.ktx) // 重复依赖，建议移除
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
