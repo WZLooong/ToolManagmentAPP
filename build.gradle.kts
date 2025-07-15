@@ -1,4 +1,12 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+pluginManagement {
+    repositories {
+        google()
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
 plugins {
     alias(toollibs.plugins.android.application) apply false
     alias(toollibs.plugins.kotlin.android) apply false
