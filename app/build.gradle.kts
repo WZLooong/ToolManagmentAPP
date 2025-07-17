@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application") version "8.1.0"
     id("org.jetbrains.kotlin.android") version "1.9.20"
-    id(toollibs.plugins.room) apply false
 }
 
 android {
@@ -54,7 +53,7 @@ dependencies {
     implementation(toollibs.androidx.activity.compose)
     // 将 androidx.compose.material 依赖添加到 libs.versions.toml 后可通过 libs 引用，当前先移除硬编码依赖
     // implementation("androidx.compose.material:material:1.4.3")
-    implementation("androidx.room:room-ktx:2.5.1")
+    implementation("androidx.room:room-ktx:${libs.versions.androidxRoom.get()}")
     androidTestImplementation(toollibs.androidx.junit)
     androidTestImplementation(toollibs.androidx.espresso.core)
     // 移除重复的 Jetpack Compose 依赖

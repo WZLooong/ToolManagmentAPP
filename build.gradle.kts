@@ -8,10 +8,10 @@ pluginManagement {
 }
 
 plugins {
-    id("com.android.application") version (libs.versions.agp.get()) apply false
-    id("org.jetbrains.kotlin.android") version (libs.versions.kotlin.get()) apply false
-    id("androidx.room.room-gradle-plugin") version (libs.versions.androidxRoom.get()) apply false
-    id("androidx.compose.compiler") version (libs.versions.ui.get()) apply false
+    id("com.android.application") version (toollibs.versions.agp.get()) apply false
+    id("org.jetbrains.kotlin.android") version (toollibs.versions.kotlin.get()) apply false
+
+    id("androidx.compose.compiler") version (toollibs.versions.ui.get()) apply false
 }
 
 allprojects {
