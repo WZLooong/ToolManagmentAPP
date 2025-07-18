@@ -8,6 +8,7 @@ plugins {
 android {
     namespace = "com.example.ToolManagmentAPP"
     compileSdk = 35
+    buildToolsVersion = "35.0.0"
 
     defaultConfig {
         applicationId = "com.example.ToolManagmentAPP"
@@ -44,6 +45,7 @@ android {
 
 
 dependencies {
+
     // 统一依赖格式，移除多余空格
     implementation(toollibs.androidx.ui)
     implementation(toollibs.androidx.ui.tooling.preview)
@@ -58,14 +60,18 @@ dependencies {
     implementation(toollibs.androidx.material3.android)
     testImplementation(toollibs.classic.junit)
     implementation(toollibs.androidx.activity.compose)
+
     // 将 androidx.compose.material 依赖添加到 libs.versions.toml 后可通过 libs 引用，当前先移除硬编码依赖
     // implementation("androidx.compose.material:material:1.4.3")
     implementation(toollibs.androidx.room.ktx)
+
     androidTestImplementation(toollibs.androidx.junit)
     androidTestImplementation(toollibs.androidx.espresso.core)
+
     // 移除重复的 Jetpack Compose 依赖
     //0427更新
     val composeBom = platform("androidx.compose:compose-bom:2024.02.00")
+
     implementation(composeBom)
     androidTestImplementation(composeBom)
 }
