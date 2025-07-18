@@ -51,22 +51,20 @@ class RegisterActivity : AppCompatActivity() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    
-                val isRegistered = userManagement.register(phone, email, password, name, employeeId, team, role)
-                runOnUiThread {
-                    if (isRegistered) {
-                        Toast.makeText(this@RegisterActivity, "注册成功", Toast.LENGTH_SHORT).show()
-                        // 跳转到登录界面
-                        val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    } catch (e: Exception) {
+                    val isRegistered = userManagement.register(phone, email, password, name, employeeId, team, role)
+                    runOnUiThread {
+                        if (isRegistered) {
+                            Toast.makeText(this@RegisterActivity, "注册成功", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            Toast.makeText(this@RegisterActivity, "用户已存在，注册失败", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: Exception) {
                     runOnUiThread {
                         Toast.makeText(this@RegisterActivity, "注册时发生错误: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } else {
-                        Toast.makeText(this@RegisterActivity, "注册失败，请稍后重试", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

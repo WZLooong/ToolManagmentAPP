@@ -36,20 +36,10 @@ class LoginActivity : AppCompatActivity() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    // 假设 userManagement 有检查用户是否注册的方法
-val isRegistered = userManagement.checkUserRegistered(identifier, password);
-if (isRegistered) {
-    val isLoggedIn = userManagement.login(identifier, password);
-} else {
-    runOnUiThread {
-        Toast.makeText(this@LoginActivity, "用户未注册，请先注册", Toast.LENGTH_SHORT).show();
-    }
-    return@launch
-}
+                    val isLoggedIn = userManagement.login(identifier, password)
                     runOnUiThread {
-                        if (::isLoggedIn.isInitialized && isLoggedIn) {
+                        if (isLoggedIn) {
                             Toast.makeText(this@LoginActivity, "登录成功", Toast.LENGTH_SHORT).show();
-                            // 跳转到主界面
                             val intent = Intent(this@LoginActivity, MainActivity::class.java);
                             startActivity(intent);
                             finish();
