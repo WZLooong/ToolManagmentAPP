@@ -11,13 +11,13 @@ activity = "1.8.0"
 constraintlayout = "2.1.4"
 roomRuntimeAndroid = "2.5.0"
 roomKtx = "2.5.0"
-ui = "1.4.0"
-uiToolingPreview = "1.4.0"
-uiTooling = "1.4.0"
-runtime = "1.4.0"
+ui = "1.9.20"
+uiToolingPreview = "1.9.20"
+uiTooling = "1.9.20"
+runtime = "1.9.20"
 material3Android = "1.1.0"
 # 定义 activityCompose 的版本号
-activityCompose = "1.4.0"
+activityCompose = "1.9.20"
 androidxRoom = "2.4.3"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,7 +42,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 room = { id = "androidx.room", version.ref = "androidxRoom" }
-compose = { id = "androidx.compose.compiler", version.ref = "ui" }
+compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ui" }
 
 [bundles]
 compose = ["androidx-ui", "androidx-ui-tooling-preview", "androidx-ui-tooling", "androidx-runtime", "androidx-material3-android", "androidx-activity-compose"]

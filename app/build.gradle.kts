@@ -1,25 +1,26 @@
+import org.gradle.api.JavaVersion
 plugins {
     id("com.android.application") version "8.1.0"
     id("org.jetbrains.kotlin.android") version "1.9.20"
+    id("org.jetbrains.compose") version "1.5.10"
 }
 
 android {
-    namespace "com.example.ToolManagmentAPP"
-    compileSdk 35
+    namespace = "com.example.ToolManagmentAPP"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId "com.example.ToolManagmentAPP"
-        minSdk 22
-        targetSdk 35
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        applicationId = "com.example.ToolManagmentAPP"
+        minSdk = 22
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled false
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -27,11 +28,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
         jvmTarget = "11"
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
 }
 
@@ -49,13 +56,16 @@ dependencies {
     implementation(toollibs.androidx.room.runtime.android)
     implementation(toollibs.androidx.runtime)
     implementation(toollibs.androidx.material3.android)
-    testImplementation(toollibs.junit)
+    testImplementation(toollibs.classic.junit)
     implementation(toollibs.androidx.activity.compose)
     // 将 androidx.compose.material 依赖添加到 libs.versions.toml 后可通过 libs 引用，当前先移除硬编码依赖
     // implementation("androidx.compose.material:material:1.4.3")
-    implementation("androidx.room:room-ktx:${libs.versions.androidxRoom.get()}")
+    implementation(toollibs.androidx.room.ktx)
     androidTestImplementation(toollibs.androidx.junit)
     androidTestImplementation(toollibs.androidx.espresso.core)
     // 移除重复的 Jetpack Compose 依赖
     //0427更新
+    val composeBom = platform("androidx.compose:compose-bom:2024.02.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
 }

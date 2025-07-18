@@ -1,12 +1,9 @@
 pluginManagement {
     repositories {
         google()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") // JetBrains Compose plugin repo
         gradlePluginPortal()
         mavenCentral()
-        jcenter()
-        maven {
-            url = uri("https://repo.maven.apache.org/maven2")
-        }
     }
 }
 
@@ -15,14 +12,16 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // 添加 Maven 仓库用于依赖解析
+        maven {
+            url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        }
     }
 
     versionCatalogs {
-
         create("toollibs") {
             from(files("gradle/libs.versions.toml"))
-           }
-
+        }
     }
 
 }
