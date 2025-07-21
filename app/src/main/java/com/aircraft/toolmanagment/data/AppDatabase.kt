@@ -12,6 +12,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.aircraft.toolmanagment.data.entity.Tool
 import com.aircraft.toolmanagment.data.entity.User
+import com.aircraft.toolmanagment.data.entity.BorrowReturnRecord
+import com.aircraft.toolmanagment.data.UserDao
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 

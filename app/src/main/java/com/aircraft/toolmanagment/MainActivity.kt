@@ -8,7 +8,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,7 +28,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.TextField
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,17 +68,19 @@ class MainActivity : ComponentActivity() {
         // Insert the record
         CoroutineScope(Dispatchers.Main).launch {
             when (val result = borrowManager.borrowTool(testRecord)) {
-                is Result.Success -> println("Successfully inserted record")
-                is Result.Error -> println("Error inserting record: ${result.message}")
-                is Result.Loading -> println("Loading...")
+                is Success -> println("Successfully inserted record")
+                is Error -> println("Error inserting record: ${result.message}")
+                is Loading -> println("Loading...")
+                else -> {}
             }
             
             // Retrieve and display records
             val recordsResult = borrowManager.getBorrowRecords(toolId = 1)
             when (recordsResult) {
-                is Result.Success -> println("Successfully retrieved ${recordsResult.data.size} records")
-                is Result.Error -> println("Error retrieving records: ${recordsResult.message}")
-                is Result.Loading -> println("Loading...")
+                is Success -> println("Successfully retrieved ${recordsResult.data.size} records")
+                is Error -> println("Error retrieving records: ${recordsResult.message}")
+                is Loading -> println("Loading...")
+                else -> {}
             }
         }
     }
@@ -124,56 +126,98 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-   @Composable
-    fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToRegister: () -> Unit) {
-        // 加载登录布局
-        AndroidView(
 
-            factory = { context ->
-             if (context != null) {
-                    LayoutInflater.from(context).inflate(R.layout.activity_login,null)
-                } else {
-                    throw IllegalArgumentException("Context cannot be null")
-                }
-            },
-            update = { view ->
-                view.findViewById<Button>(R.id.btn_login).setOnClickListener {
-                    val username = view.findViewById<EditText>(R.id.et_username_login).text.toString()
-                    val password = view.findViewById<EditText>(R.id.et_password_login).text.toString()
-                    onLogin(username, password)
-                }
-                view.findViewById<Button>(R.id.btn_register_nav).setOnClickListener {
-                    onNavigateToRegister()
-                }
+    @Composable
+    fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToRegister: () -> Unit) {
+        var username by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { androidx.compose.material3.Text("用户名") },
+                modifier = Modifier.fillMaxSize(0.8f)
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { androidx.compose.material3.Text("密码") },
+                modifier = Modifier.fillMaxSize(0.8f),
+                singleLine = true
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            androidx.compose.material3.Button(onClick = { onLogin(username, password) }, modifier = Modifier.fillMaxSize(0.8f)) {
+                androidx.compose.material3.Text("登录")
             }
-        )
+            Spacer(modifier = Modifier.size(8.dp))
+            androidx.compose.material3.TextButton(onClick = onNavigateToRegister) {
+                androidx.compose.material3.Text("没有账号？去注册")
+            }
+        }
     }
 
 
     @Composable
     fun RegisterScreen(onRegister: (String, String) -> Unit, onNavigateToLogin: () -> Unit) {
-        // 加载注册布局
-        AndroidView(
-
-            factory = { context ->
-                LayoutInflater.from(context).inflate(R.layout.activity_register, null)
-            },
-            update = { view ->
-                view.findViewById<Button>(R.id.btn_register).setOnClickListener {
-                    val username = view.findViewById<EditText>(R.id.et_username_register).text.toString()
-                    val password = view.findViewById<EditText>(R.id.et_password_register).text.toString()
-                    val confirmPassword = view.findViewById<EditText>(R.id.et_confirm_password_register).text.toString()
-                    if (password == confirmPassword) {
-                        onRegister(username, password)
-                    } else {
-                        Toast.makeText(view.context, "两次输入的密码不一致", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                view.findViewById<Button>(R.id.btn_login_nav).setOnClickListener {
-                    onNavigateToLogin()
-                }
+        var username by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
+        var confirmPassword by remember { mutableStateOf("") }
+        var errorMsg by remember { mutableStateOf("") }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { androidx.compose.material3.Text("用户名") },
+                modifier = Modifier.fillMaxSize(0.8f)
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { androidx.compose.material3.Text("密码") },
+                modifier = Modifier.fillMaxSize(0.8f),
+                singleLine = true
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            TextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { androidx.compose.material3.Text("确认密码") },
+                modifier = Modifier.fillMaxSize(0.8f),
+                singleLine = true
+            )
+            if (errorMsg.isNotEmpty()) {
+                androidx.compose.material3.Text(errorMsg, color = androidx.compose.material3.MaterialTheme.colorScheme.error)
             }
-        )
+            Spacer(modifier = Modifier.size(16.dp))
+            androidx.compose.material3.Button(onClick = {
+                if (password == confirmPassword) {
+                    errorMsg = ""
+                    onRegister(username, password)
+                } else {
+                    errorMsg = "两次输入的密码不一致"
+                }
+            }, modifier = Modifier.fillMaxSize(0.8f)) {
+                androidx.compose.material3.Text("注册")
+            }
+            Spacer(modifier = Modifier.size(8.dp))
+            androidx.compose.material3.TextButton(onClick = onNavigateToLogin) {
+                androidx.compose.material3.Text("已有账号？去登录")
+            }
+        }
     }
 }
 
