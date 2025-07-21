@@ -1,4 +1,4 @@
-package com.example.toolmagapp.entity;
+package com.aircraft.toolmanagment.data.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

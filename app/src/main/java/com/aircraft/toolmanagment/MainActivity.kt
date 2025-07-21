@@ -2,7 +2,7 @@ package com.aircraft.toolmanagment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater // 新增导入
+import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -15,7 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.viewinterop.AndroidView // 确保导入 AndroidView
+import androidx.compose.ui.viewinterop.AndroidView
+import com.aircraft.toolmanagment.data.entity.BorrowReturnRecord
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,9 +42,44 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         userManagement = UserManagement(this)
 
+        testBorrowOperations()
 
         setContent {
             LoginRegisterScreen()
+        }
+    }
+
+    private fun testBorrowOperations() {
+        val borrowManager = BorrowReturnManagement(this)
+        
+        // Create a test record
+        val testRecord = BorrowReturnRecord(
+            id = null,
+            toolId = 1,
+            borrowerId = 1001,
+            borrowTime = System.currentTimeMillis(),
+            expectedReturnTime = System.currentTimeMillis() + (7 * 24 * 60 * 60 * 1000), // 7 days later
+            actualReturnTime = null,
+            borrowReason = "Routine maintenance",
+            approvalStatus = "Approved",
+            rejectionReason = null
+        )
+
+        // Insert the record
+        CoroutineScope(Dispatchers.Main).launch {
+            when (val result = borrowManager.borrowTool(testRecord)) {
+                is Result.Success -> println("Successfully inserted record")
+                is Result.Error -> println("Error inserting record: ${result.message}")
+                is Result.Loading -> println("Loading...")
+            }
+            
+            // Retrieve and display records
+            val recordsResult = borrowManager.getBorrowRecords(toolId = 1)
+            when (recordsResult) {
+                is Result.Success -> println("Successfully retrieved ${recordsResult.data.size} records")
+                is Result.Error -> println("Error retrieving records: ${recordsResult.message}")
+                is Result.Loading -> println("Loading...")
+            }
         }
     }
 

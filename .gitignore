@@ -1,15 +1,42 @@
+# Built files
+*.apk
+*.ap_
+*.aab
+*.jar
+*.class
+
+# Generated files
+*/build/
+*/**/build/
+*/out/
 *.iml
+*.ipr
+*.iws
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+*/.idea/caches/
+*/.idea/libraries/
+*/.idea/modules.xml
+*/.idea/workspace.xml
+*/.idea/inspectionProfiles/
+*/.idea/requiredPlugins.xml
+
+# Local configuration file (sdk path, etc)
 local.properties
+
+# Windows thumbnail cache
+Thumbs.db
+
+# Java heap dumps
+*.hprof
+
+# Folder config
+*.sublime-project
+*.sublime-workspace
+
+# Log files
+*.log
+
+# Android NDK
+*/.externalNativeBuild/
+*/.cxx/

@@ -24,10 +24,11 @@ val MIGRATION_1_2: Migration = object : Migration(1, 2) {
     }
 }
 
-@Database(entities = [Tool::class, User::class], version = 2)
+@Database(entities = [Tool::class, User::class, BorrowReturnRecord::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun toolDao(): ToolDao
     abstract fun userDao(): UserDao
+    abstract fun borrowReturnDao(): BorrowReturnDao
 
     companion object {
         @Volatile

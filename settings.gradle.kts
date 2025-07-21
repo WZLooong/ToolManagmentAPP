@@ -1,21 +1,22 @@
 pluginManagement {
     repositories {
+        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") } // JetBrains Compose plugin repo
+        maven { url = uri("https://mirrors.cloud.tencent.com/gradle-plugin/") }
         google()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") // JetBrains Compose plugin repo
         gradlePluginPortal()
-        maven { url = uri("https://maven.aliyun.com/repository/public") }
+        maven { url = uri("https://mirrors.cloud.tencent.com/repository/maven-public/") }
     }
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS) // Change to prefer settings repositories
     repositories {
+        maven { url = uri("https://mirrors.cloud.tencent.com/repository/maven-public/") }
         google()
-        maven { url = uri("https://maven.aliyun.com/repository/public") }
-        // 添加 Maven 仓库用于依赖解析
-        maven {
-            url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-        }
+        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
+        maven { url = uri("https://mirrors.cloud.tencent.com/androidx/") }
+        maven { url = uri("https://mirrors.cloud.tencent.com/google/") }
+        mavenCentral()
     }
 
     versionCatalogs {

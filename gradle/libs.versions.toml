@@ -1,3 +1,21 @@
+[libraries]
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version = "1.2.1" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+classic-junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime", version.ref = "roomRuntimeAndroid" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "uiToolingPreview" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
+androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
+# 定义 androidx.activity:activity-compose 依赖项
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 [versions]
 agp = "8.1.0"
 kotlin = "1.9.20"
@@ -11,43 +29,20 @@ activity = "1.8.0"
 constraintlayout = "2.1.4"
 roomRuntimeAndroid = "2.5.0"
 roomKtx = "2.5.0"
-ui = "2024.02.00"
-uiToolingPreview = "2024.02.00"
-uiTooling = "2024.02.00"
-runtime = "2024.02.00"
-material3Android = "2024.02.00"
-# 定义 activityCompose 的版本号
-activityCompose = "2024.02.00"
+ui = "1.5.0"
+uiToolingPreview = "1.5.0"
+uiTooling = "1.5.0"
+runtime = "1.5.0"
+material3Android = "1.5.0"
+activityCompose = "1.5.0"
 androidxRoom = "2.4.3"
 
-[libraries]
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-classic-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
-androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
-androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "uiToolingPreview" }
-androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
-androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
-androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
-# 定义 androidx.activity:activity-compose 依赖项
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 room = { id = "androidx.room", version.ref = "androidxRoom" }
-compose = { id = "org.jetbrains.compose", version.ref = "ui" }
+compose = { id = "org.jetbrains.compose", version = "1.6.4" }
 
 [bundles]
-compose = ["androidx-ui", "androidx-ui-tooling-preview", "androidx-ui-tooling", "androidx-runtime", "androidx-material3-android", "androidx-activity-compose"]
-
-
-
-
+compose = ["androidx-ui", "androidx-ui-tooling-preview", "androidx-ui-tooling", "androidx-runtime", "androidx-activity-compose"]

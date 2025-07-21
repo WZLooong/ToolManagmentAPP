@@ -57,7 +57,7 @@ dependencies {
     implementation(toollibs.androidx.constraintlayout)
     implementation(toollibs.androidx.room.runtime.android)
     implementation(toollibs.androidx.runtime)
-    implementation(toollibs.androidx.material3.android)
+    implementation(toollibs.androidx.material3)
     testImplementation(toollibs.classic.junit)
     implementation(toollibs.androidx.activity.compose)
 
