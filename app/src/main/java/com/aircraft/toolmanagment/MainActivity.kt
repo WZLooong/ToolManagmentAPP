@@ -28,7 +28,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.TextField
+import androidx.compose.material.TextField
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -126,39 +126,22 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     @Composable
     fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToRegister: () -> Unit) {
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            TextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { androidx.compose.material3.Text("用户名") },
-                modifier = Modifier.fillMaxSize(0.8f)
-            )
+            OutlinedTextField(value = username, onValueChange = { username = it }, label = { Text("用户名") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("密码") }, modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.size(16.dp))
-            TextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { androidx.compose.material3.Text("密码") },
-                modifier = Modifier.fillMaxSize(0.8f),
-                singleLine = true
-            )
-            Spacer(modifier = Modifier.size(16.dp))
-            androidx.compose.material3.Button(onClick = { onLogin(username, password) }, modifier = Modifier.fillMaxSize(0.8f)) {
-                androidx.compose.material3.Text("登录")
+            Button(onClick = { onLogin(username, password) }, modifier = Modifier.fillMaxWidth()) {
+                Text("登录")
             }
-            Spacer(modifier = Modifier.size(8.dp))
-            androidx.compose.material3.TextButton(onClick = onNavigateToRegister) {
-                androidx.compose.material3.Text("没有账号？去注册")
+            Button(onClick = { onNavigateToRegister() }, modifier = Modifier.fillMaxWidth()) {
+                Text("去注册")
             }
         }
     }
@@ -169,53 +152,25 @@ class MainActivity : ComponentActivity() {
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var confirmPassword by remember { mutableStateOf("") }
-        var errorMsg by remember { mutableStateOf("") }
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            TextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { androidx.compose.material3.Text("用户名") },
-                modifier = Modifier.fillMaxSize(0.8f)
-            )
+            OutlinedTextField(value = username, onValueChange = { username = it }, label = { Text("用户名") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("密码") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = confirmPassword, onValueChange = { confirmPassword = it }, label = { Text("确认密码") }, modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.size(16.dp))
-            TextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { androidx.compose.material3.Text("密码") },
-                modifier = Modifier.fillMaxSize(0.8f),
-                singleLine = true
-            )
-            Spacer(modifier = Modifier.size(16.dp))
-            TextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                label = { androidx.compose.material3.Text("确认密码") },
-                modifier = Modifier.fillMaxSize(0.8f),
-                singleLine = true
-            )
-            if (errorMsg.isNotEmpty()) {
-                androidx.compose.material3.Text(errorMsg, color = androidx.compose.material3.MaterialTheme.colorScheme.error)
-            }
-            Spacer(modifier = Modifier.size(16.dp))
-            androidx.compose.material3.Button(onClick = {
+            Button(onClick = {
                 if (password == confirmPassword) {
-                    errorMsg = ""
                     onRegister(username, password)
                 } else {
-                    errorMsg = "两次输入的密码不一致"
+                    Toast.makeText(LocalContext.current, "两次输入的密码不一致", Toast.LENGTH_SHORT).show()
                 }
-            }, modifier = Modifier.fillMaxSize(0.8f)) {
-                androidx.compose.material3.Text("注册")
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text("注册")
             }
-            Spacer(modifier = Modifier.size(8.dp))
-            androidx.compose.material3.TextButton(onClick = onNavigateToLogin) {
-                androidx.compose.material3.Text("已有账号？去登录")
+            Button(onClick = { onNavigateToLogin() }, modifier = Modifier.fillMaxWidth()) {
+                Text("去登录")
             }
         }
     }

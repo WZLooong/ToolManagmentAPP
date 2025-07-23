@@ -1,73 +1,94 @@
+
 package com.aircraft.toolmanagment
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : ComponentActivity() {
     private lateinit var userManagement: UserManagement
-    private lateinit var phoneEditText: EditText
-    private lateinit var emailEditText: EditText
-    private lateinit var passwordEditText: EditText
-    private lateinit var nameEditText: EditText
-    private lateinit var employeeIdEditText: EditText
-    private lateinit var teamEditText: EditText
-    private lateinit var roleEditText: EditText
-    private lateinit var registerButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
-
         userManagement = UserManagement(this)
-        phoneEditText = findViewById(R.id.phoneEditText)
-        emailEditText = findViewById(R.id.emailEditText)
-        passwordEditText = findViewById(R.id.passwordEditText)
-        nameEditText = findViewById(R.id.nameEditText)
-        employeeIdEditText = findViewById(R.id.employeeIdEditText)
-        teamEditText = findViewById(R.id.teamEditText)
-        roleEditText = findViewById(R.id.roleEditText)
-        registerButton = findViewById(R.id.registerButton)
-
-        registerButton.setOnClickListener {
-            // 输入验证
-            if (passwordEditText.text.toString().isBlank() || nameEditText.text.toString().isBlank() || employeeIdEditText.text.toString().isBlank()) {
-                Toast.makeText(this@RegisterActivity, "密码、姓名和员工 ID 不能为空", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            val phone = phoneEditText.text.toString().takeIf { it.isNotBlank() }
-            val email = emailEditText.text.toString().takeIf { it.isNotBlank() }
-            val password = passwordEditText.text.toString()
-            val name = nameEditText.text.toString()
-            val employeeId = employeeIdEditText.text.toString()
-            val team = teamEditText.text.toString()
-            val role = roleEditText.text.toString()
-
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val isRegistered = userManagement.register(phone, email, password, name, employeeId, team, role)
-                    runOnUiThread {
-                        if (isRegistered) {
-                            Toast.makeText(this@RegisterActivity, "注册成功", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-                            startActivity(intent)
-                            finish()
-                        } else {
-                            Toast.makeText(this@RegisterActivity, "用户已存在，注册失败", Toast.LENGTH_SHORT).show()
+        setContent {
+            MaterialTheme {
+                RegisterScreen { phone, email, password, name, employeeId, team, role ->
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val isRegistered = userManagement.register(phone, email, password, name, employeeId, team, role)
+                            runOnUiThread {
+                                if (isRegistered) {
+                                    Toast.makeText(this@RegisterActivity, "注册成功", Toast.LENGTH_SHORT).show()
+                                    finish()
+                                } else {
+                                    Toast.makeText(this@RegisterActivity, "注册失败，用户名或员工 ID 已存在", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        } catch (e: Exception) {
+                            runOnUiThread {
+                                Toast.makeText(this@RegisterActivity, "注册异常: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
                         }
-                    }
-                } catch (e: Exception) {
-                    runOnUiThread {
-                        Toast.makeText(this@RegisterActivity, "注册时发生错误: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun RegisterScreen(onRegister: (phone: String?, email: String?, password: String, name: String, employeeId: String, team: String, role: String) -> Unit) {
+    var phone by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var employeeId by remember { mutableStateOf("") }
+    var team by remember { mutableStateOf("") }
+    var role by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier.padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        OutlinedTextField(value = phone, onValueChange = { phone = it }, label = { Text("手机号") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("邮箱") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("密码") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("姓名") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = employeeId, onValueChange = { employeeId = it }, label = { Text("员工ID") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = team, onValueChange = { team = it }, label = { Text("团队") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = role, onValueChange = { role = it }, label = { Text("角色") }, modifier = Modifier.fillMaxWidth())
+        Spacer(modifier = Modifier.size(16.dp))
+        Button(onClick = {
+            if (password.isBlank() || name.isBlank() || employeeId.isBlank()) {
+                Toast.makeText(
+                    LocalContext.current,
+                    "密码、姓名和员工 ID 不能为空",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@Button
+            }
+            onRegister(phone.takeIf { it.isNotBlank() }, email.takeIf { it.isNotBlank() }, password, name, employeeId, team, role)
+        }, modifier = Modifier.fillMaxWidth()) {
+            Text("注册")
+        }
+    }
+}
 }

@@ -61,8 +61,7 @@ dependencies {
     testImplementation(toollibs.classic.junit)
     implementation(toollibs.androidx.activity.compose)
 
-    // 将 androidx.compose.material 依赖添加到 libs.versions.toml 后可通过 libs 引用，当前先移除硬编码依赖
-    // implementation("androidx.compose.material:material:1.4.3")
+    implementation("androidx.compose.material:material:1.6.1")
     implementation(toollibs.androidx.room.ktx)
 
     androidTestImplementation(toollibs.androidx.junit)

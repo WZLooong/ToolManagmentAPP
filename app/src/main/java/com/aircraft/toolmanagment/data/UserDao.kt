@@ -1,11 +1,10 @@
-
+import androidx.room.Delete
 package com.aircraft.toolmanagment.data
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import androidx.room.Delete
 import com.aircraft.toolmanagment.data.entity.User
 
 @Dao
