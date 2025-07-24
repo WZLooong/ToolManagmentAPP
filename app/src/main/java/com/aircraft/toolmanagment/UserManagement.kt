@@ -17,15 +17,14 @@ class UserManagement(private val context: Context) {
         // 注册前查重
         val exist = db.userDao().getUserByNameOrUserId(name, employeeId)
         if (exist != null) return false
-        val newUser = User(
-            phone = phone,
-            email = email,
-            password = password,
-            name = name,
-            employee_id = employeeId,
-            team = team,
-            role = role
-        )
+        val newUser = User()
+        newUser.phone = phone;
+        newUser.email = email;
+        newUser.password = password;
+        newUser.name = name;
+        newUser.employee_id = employeeId;
+        newUser.team = team;
+        newUser.role = role;
         db.userDao().insertUser(newUser)
         return true
     }

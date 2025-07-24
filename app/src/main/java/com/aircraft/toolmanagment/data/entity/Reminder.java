@@ -1,74 +1,17 @@
-package com.example.toolmagapp.entity;
+package com.aircraft.toolmanagment.data.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import java.sql.Timestamp;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(tableName = "reminders")
 public class Reminder {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-    @ManyToOne
-    @JoinColumn(name = "tool_id")
-    private Tool tool;
-    private String reminderType;
-    private String message;
-    private Timestamp sentTime;
+    @PrimaryKey(autoGenerate = true)
+    public int id;
+    public int userId;
+    public int toolId;
+    public String reminderType;
+    public String message;
+    public long sentTime;
 
-    // Getters and Setters
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Tool getTool() {
-        return tool;
-    }
-
-    public void setTool(Tool tool) {
-        this.tool = tool;
-    }
-
-    public String getReminderType() {
-        return reminderType;
-    }
-
-    public void setReminderType(String reminderType) {
-        this.reminderType = reminderType;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Timestamp getSentTime() {
-        return sentTime;
-    }
-
-    public void setSentTime(Timestamp sentTime) {
-        this.sentTime = sentTime;
-    }
+    public Reminder() {}
 }

@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -76,13 +77,12 @@ fun RegisterScreen(onRegister: (phone: String?, email: String?, password: String
         OutlinedTextField(value = team, onValueChange = { team = it }, label = { Text("团队") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = role, onValueChange = { role = it }, label = { Text("角色") }, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.size(16.dp))
+        val context = LocalContext.current
         Button(onClick = {
             if (password.isBlank() || name.isBlank() || employeeId.isBlank()) {
-                Toast.makeText(
-                    LocalContext.current,
-                    "密码、姓名和员工 ID 不能为空",
-                    Toast.LENGTH_SHORT
-                ).show()
+                CoroutineScope(Dispatchers.Main).launch {
+                    Toast.makeText(context, "密码、姓名和员工 ID 不能为空", Toast.LENGTH_SHORT).show()
+                }
                 return@Button
             }
             onRegister(phone.takeIf { it.isNotBlank() }, email.takeIf { it.isNotBlank() }, password, name, employeeId, team, role)
@@ -90,5 +90,4 @@ fun RegisterScreen(onRegister: (phone: String?, email: String?, password: String
             Text("注册")
         }
     }
-}
 }
