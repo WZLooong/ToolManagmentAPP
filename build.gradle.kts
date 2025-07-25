@@ -6,4 +6,3 @@ plugins {
 }
 // Ensure the plugin definitions in libs.versions.toml are correct
 // Based on the current libs.versions.toml, the references should work as is
-

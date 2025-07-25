@@ -12,10 +12,10 @@ interface UserDao {
     @Insert
     suspend fun insertUser(user: User)
 
-    @Query("SELECT * FROM users WHERE (name = :identifier OR employee_id = :identifier) AND password = :password")
+    @Query("SELECT * FROM users WHERE (name = :identifier OR employeeId = :identifier) AND password = :password")
     suspend fun getUserByIdentifierAndPassword(identifier: String, password: String): User?
 
-    @Query("SELECT * FROM users WHERE name = :name OR employee_id = :userId LIMIT 1")
+    @Query("SELECT * FROM users WHERE name = :name OR employeeId = :userId LIMIT 1")
     suspend fun getUserByNameOrUserId(name: String, userId: String): User?
 
     @Update

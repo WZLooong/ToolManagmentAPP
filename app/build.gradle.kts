@@ -3,9 +3,16 @@ plugins {
     id("com.android.application") version "8.1.0"
     id("org.jetbrains.kotlin.android") version "1.9.20"
     id("org.jetbrains.compose") version "1.5.10"
+    id("kotlin-kapt")
+    id("androidx.room") version "2.6.1"
 }
 
 android {
+
+    // Room数据库配置
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
     namespace = "com.example.ToolManagmentAPP"
     compileSdk = 35
     buildToolsVersion = "35.0.0"
@@ -17,6 +24,8 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+
     }
 
     buildTypes {
@@ -41,6 +50,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.10"
     }
+
 }
 
 
@@ -55,7 +65,9 @@ dependencies {
     implementation(toollibs.material)
     implementation(toollibs.androidx.activity)
     implementation(toollibs.androidx.constraintlayout)
-    implementation(toollibs.androidx.room.runtime.android)
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
     implementation(toollibs.androidx.runtime)
     implementation(toollibs.androidx.material3)
     testImplementation(toollibs.classic.junit)

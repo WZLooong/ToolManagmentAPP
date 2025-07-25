@@ -15,7 +15,7 @@
         android:theme="@style/Theme.ToolMagAPP"
         tools:targetApi="31">
         <activity
-            android:name=".LoginActivity"
+            android:name="com.aircraft.toolmanagment.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.ToolMagAPP">
             <intent-filter>

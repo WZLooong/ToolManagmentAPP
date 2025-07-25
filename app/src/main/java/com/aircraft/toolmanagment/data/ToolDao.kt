@@ -11,7 +11,7 @@ interface ToolDao {
     @Insert
     suspend fun insertTool(tool: Tool)
 
-    @Query("SELECT * FROM Tool WHERE name LIKE '%' || :keyword || '%'")
+    @Query("SELECT * FROM tools WHERE name LIKE '%' || :keyword || '%'")
     suspend fun searchTool(keyword: String): List<Tool>
 
     @Update

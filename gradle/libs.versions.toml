@@ -27,21 +27,19 @@ appcompat = "1.6.1"
 material = "1.9.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
-roomRuntimeAndroid = "2.5.0"
-roomKtx = "2.5.0"
+roomRuntimeAndroid = "2.6.1"
+roomKtx = "2.6.1"
 ui = "1.5.0"
 uiToolingPreview = "1.5.0"
 uiTooling = "1.5.0"
 runtime = "1.5.0"
 material3Android = "1.5.0"
 activityCompose = "1.5.0"
-androidxRoom = "2.4.3"
 
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-room = { id = "androidx.room", version.ref = "androidxRoom" }
 compose = { id = "org.jetbrains.compose", version = "1.6.4" }
 
 [bundles]
