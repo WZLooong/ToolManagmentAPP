@@ -20,13 +20,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 // 创建迁移对象，从版本 1 到版本 2
-val MIGRATION_1_2: Migration = object : Migration(1, 2) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        // 创建 User 表
-        database.execSQL(
-            "CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `password` TEXT NOT NULL, `user_id` INTEGER NOT NULL, `user_name` TEXT NOT NULL, `department` TEXT NOT NULL, `positon` TEXT NOT NULL)")
-    }
-}
+// 如无旧数据，可移除迁移逻辑，避免字段不一致导致崩溃
 
 @Database(entities = [Tool::class, User::class, BorrowReturnRecord::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {

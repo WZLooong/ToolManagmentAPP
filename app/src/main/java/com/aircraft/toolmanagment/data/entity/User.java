@@ -18,4 +18,6 @@ public class User {
 
     // Room 不建议使用 Timestamp，建议用 long 或 String
     public long createdAt;
+    // Room 要求必须有 public 的无参构造函数
+    public User() {}
 }
