@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9465530a2508caf0a4aaa5729f4d256d",
+    "identityHash": "2cfe92640199c1b5bf8b5a82d96910e2",
     "entities": [
       {
         "tableName": "tools",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `model` TEXT, `specification` TEXT, `quantity` INTEGER NOT NULL, `manufacturer` TEXT, `purchaseDate` INTEGER NOT NULL, `storageLocation` TEXT, `barcode` TEXT, `status` TEXT, `updatedAt` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `model` TEXT NOT NULL, `specification` TEXT NOT NULL, `quantity` INTEGER NOT NULL, `manufacturer` TEXT NOT NULL, `purchaseDate` INTEGER NOT NULL, `storageLocation` TEXT NOT NULL, `barcode` TEXT NOT NULL, `status` TEXT NOT NULL, `updatedAt` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -18,19 +18,19 @@
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "model",
             "columnName": "model",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "specification",
             "columnName": "specification",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "quantity",
@@ -42,7 +42,7 @@
             "fieldPath": "manufacturer",
             "columnName": "manufacturer",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "purchaseDate",
@@ -54,19 +54,19 @@
             "fieldPath": "storageLocation",
             "columnName": "storageLocation",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "barcode",
             "columnName": "barcode",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "status",
             "columnName": "status",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "updatedAt",
@@ -154,7 +154,7 @@
       },
       {
         "tableName": "borrow_return_records",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `toolId` INTEGER NOT NULL, `borrowerId` INTEGER NOT NULL, `borrowTime` INTEGER NOT NULL, `expectedReturnTime` INTEGER NOT NULL, `actualReturnTime` INTEGER, `borrowReason` TEXT, `approvalStatus` TEXT, `rejectionReason` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `toolId` INTEGER NOT NULL, `borrowerId` INTEGER NOT NULL, `borrowTime` INTEGER NOT NULL, `expectedReturnTime` INTEGER NOT NULL, `actualReturnTime` INTEGER, `borrowReason` TEXT NOT NULL, `approvalStatus` TEXT NOT NULL, `rejectionReason` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -196,19 +196,19 @@
             "fieldPath": "borrowReason",
             "columnName": "borrowReason",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "approvalStatus",
             "columnName": "approvalStatus",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "rejectionReason",
             "columnName": "rejectionReason",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -224,7 +224,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9465530a2508caf0a4aaa5729f4d256d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2cfe92640199c1b5bf8b5a82d96910e2')"
     ]
   }
 }

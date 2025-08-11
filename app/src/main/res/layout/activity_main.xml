@@ -8,12 +8,78 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/welcome_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="@string/welcome_message"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary"
+        android:layout_marginTop="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <Button
+        android:id="@+id/btn_tool_management"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tool_management"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="32dp"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:backgroundTint="@color/primary"
+        app:layout_constraintTop_toBottomOf="@+id/welcome_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/btn_borrow_return"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/borrow_return_management"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:backgroundTint="@color/primary"
+        app:layout_constraintTop_toBottomOf="@+id/btn_tool_management"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/btn_user_management"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/user_management"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:backgroundTint="@color/primary"
+        app:layout_constraintTop_toBottomOf="@+id/btn_borrow_return"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/btn_logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/logout"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:backgroundTint="@color/design_default_color_error"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

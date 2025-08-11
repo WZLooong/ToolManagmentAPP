@@ -14,4 +14,7 @@ data class User(
     val email: String? = null,
     val team: String,
     val role: String
-)
+) {
+    // No-argument constructor for Room and Gson compatibility
+    constructor() : this(0, "", "", "", "", null, null, "", "")
+}

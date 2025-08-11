@@ -2,186 +2,225 @@ package com.aircraft.toolmanagment
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.ScrollView
-import android.widget.TextView
+import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.example.ToolManagmentAPP.R
-import kotlinx.coroutines.CoroutineScope
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import com.aircraft.toolmanagment.R
+import com.aircraft.toolmanagment.UserManagement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : ComponentActivity() {
     private lateinit var userManagement: UserManagement
-    private lateinit var identifierEditText: EditText
-    private lateinit var passwordEditText: EditText
-    private lateinit var loginButton: Button
-
-    private lateinit var forgotPasswordTextView: TextView
-    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
         userManagement = UserManagement(this)
-        identifierEditText = findViewById(R.id.et_username_login)
-        passwordEditText = findViewById(R.id.et_password_login)
-        loginButton = findViewById(R.id.btn_login)
-
-        forgotPasswordTextView = findViewById(R.id.tv_forgot_password)
-        progressBar = findViewById(R.id.pb_login)
-
-        // 登录按钮点击事件
-        loginButton.setOnClickListener { 
-            attemptLogin()
-        }
-
-        // 注册按钮点击事件
-        findViewById<Button>(R.id.btn_register).setOnClickListener {
-            attemptRegister()
-        }
-
-        // 忘记密码点击事件
-        forgotPasswordTextView.setOnClickListener {
-            // 这里可以添加忘记密码逻辑
-            Toast.makeText(this, "忘记密码功能暂未实现", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun attemptRegister() {
-        // 获取注册表单数据
-        val email = findViewById<EditText>(R.id.et_email_register).text.toString().trim()
-        val username = findViewById<EditText>(R.id.et_username_register).text.toString().trim()
-        val password = findViewById<EditText>(R.id.et_password_register).text.toString().trim()
-        val confirmPassword = findViewById<EditText>(R.id.et_confirm_password_register).text.toString().trim()
-
-        // 简单验证
-        if (email.isBlank() || username.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
-            Toast.makeText(this, "请填写所有字段", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (password != confirmPassword) {
-            Toast.makeText(this, "两次输入的密码不一致", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (password.length < 6) {
-            Toast.makeText(this, "密码长度不能少于6位", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // 显示加载进度
-        showProgress(true)
-
-        // 执行注册
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                // 这里使用username作为team和role的临时值，实际应用中应该从UI获取这些信息
-                val isRegistered = userManagement.register(email, email, password, username, username, username, "user")
-                runOnUiThread { 
-                    showProgress(false)
-                    if (isRegistered) {
-                        Toast.makeText(this@LoginActivity, "注册成功，请登录", Toast.LENGTH_SHORT).show()
-                        // 注册成功后可以清空表单或保持现状
-                    } else {
-                        Toast.makeText(this@LoginActivity, "用户名或工号已存在", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                runOnUiThread { 
-                    showProgress(false)
-                    Toast.makeText(this@LoginActivity, "注册失败: ${e.message}", Toast.LENGTH_SHORT).show()
+        
+        setContent {
+            MaterialTheme {
+                LoginScreen { identifier, password ->
+                    login(identifier, password)
                 }
             }
         }
     }
 
-    private fun attemptLogin() {
-        // 重置错误
-        identifierEditText.error = null
-        passwordEditText.error = null
-
-        // 获取输入值
-        val identifier = identifierEditText.text.toString().trim()
-        val password = passwordEditText.text.toString().trim()
-
-        var cancel = false
-        var focusView: View? = null
-
-        // 验证用户名
-        if (identifier.isBlank()) {
-            identifierEditText.error = "请输入用户名"
-            focusView = identifierEditText
-            cancel = true
+    private fun login(identifier: String, password: String) {
+        if (identifier.isBlank() || password.isBlank()) {
+            if (!isFinishing && !isDestroyed) {
+                Toast.makeText(this, "请输入用户名/员工ID和密码", Toast.LENGTH_SHORT).show()
+            }
+            return
         }
 
-        // 验证密码
-        if (password.isBlank()) {
-            passwordEditText.error = "请输入密码"
-            focusView = passwordEditText
-            cancel = true
-        } else if (password.length < 6) {
-            passwordEditText.error = "密码长度不能少于6位"
-            focusView = passwordEditText
-            cancel = true
-        }
-
-        if (cancel) {
-            // 有错误，聚焦到第一个有错误的输入框
-            focusView?.requestFocus()
-        } else {
-            // 显示加载进度
-            showProgress(true)
-
-            // 执行登录逻辑
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    // 先检查用户是否存在
-                    val userExists = userManagement.checkUserExists(identifier)
-                    if (!userExists) {
-                        // 用户不存在，跳转到注册页面
-                        runOnUiThread {
-                            showProgress(false)
-                            Toast.makeText(this@LoginActivity, "用户不存在，请先注册", Toast.LENGTH_SHORT).show()
-                            // 自动填充用户名到注册表单
-                            findViewById<EditText>(R.id.et_username_register).setText(identifier)
-                            // 滚动到注册表单
-                            findViewById<ScrollView>(R.id.scroll_view_login).smoothScrollTo(0, findViewById<LinearLayout>(R.id.ll_register_form).top)
-                        }
-                    } else {
-                        // 用户存在，验证密码
-                        val isLoggedIn = userManagement.login(identifier, password)
-                        runOnUiThread {
-                            showProgress(false)
-                            if (isLoggedIn) {
+        // 使用lifecycleScope来自动管理协程生命周期
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val user = userManagement.loginUser(identifier, password)
+                // 检查Activity是否仍然处于活跃状态
+                if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                    runOnUiThread {
+                        // 再次检查Activity是否仍然处于活跃状态
+                        if (!isFinishing && !isDestroyed) {
+                            if (user != null) {
                                 Toast.makeText(this@LoginActivity, "登录成功", Toast.LENGTH_SHORT).show()
+                                // Navigate to main activity
                                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
                                 startActivity(intent)
                                 finish()
                             } else {
-                                Toast.makeText(this@LoginActivity, "密码错误，请重新输入", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@LoginActivity, "登录失败，请检查用户名和密码", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
-                } catch (e: Exception) {
+                }
+            } catch (e: Exception) {
+                // 检查Activity是否仍然处于活跃状态
+                if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
                     runOnUiThread {
-                        showProgress(false)
-                        Toast.makeText(this@LoginActivity, "登录时发生错误: ${e.message}", Toast.LENGTH_SHORT).show()
+                        // 再次检查Activity是否仍然处于活跃状态
+                        if (!isFinishing && !isDestroyed) {
+                            val errorMessage = e.message ?: "未知错误"
+                            Log.e("LoginActivity", "登录异常", e)
+                            Toast.makeText(this@LoginActivity, "登录异常: $errorMessage", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             }
         }
     }
+}
 
-    private fun showProgress(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
-        loginButton.isEnabled = !show
-        findViewById<Button>(R.id.btn_register).isEnabled = !show
+@Composable
+fun LoginScreen(onLogin: (identifier: String, password: String) -> Unit) {
+    var identifier by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    
+    var identifierError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+
+    val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Logo and title
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_background),
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(top = 60.dp, bottom = 16.dp)
+            )
+
+            Text(
+                text = "工具管理系统",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
+
+            // Form area
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Username/Employee ID field
+                OutlinedTextField(
+                    value = identifier,
+                    onValueChange = { 
+                        identifier = it
+                        identifierError = null // Clear error when user types
+                    },
+                    label = { Text("用户名或员工ID") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = identifierError != null,
+                    supportingText = identifierError?.let { { Text(it) } },
+                    shape = RoundedCornerShape(8.dp)
+                )
+
+                // Password field
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { 
+                        password = it
+                        passwordError = null // Clear error when user types
+                    },
+                    label = { Text("密码") },
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = PasswordVisualTransformation(),
+                    isError = passwordError != null,
+                    supportingText = passwordError?.let { { Text(it) } },
+                    shape = RoundedCornerShape(8.dp)
+                )
+
+                // Login button
+                Button(
+                    onClick = {
+                        // Reset errors
+                        identifierError = null
+                        passwordError = null
+
+                        var isValid = true
+
+                        // Validate identifier
+                        if (identifier.isBlank()) {
+                            identifierError = "请输入用户名或员工ID"
+                            isValid = false
+                        }
+
+                        // Validate password
+                        if (password.isBlank()) {
+                            passwordError = "请输入密码"
+                            isValid = false
+                        }
+
+                        if (isValid) {
+                            onLogin(identifier, password)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2196F3),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(text = "登录", fontSize = 16.sp)
+                }
+                
+                // Register navigation button
+                TextButton(
+                    onClick = {
+                        val intent = Intent(context, RegisterActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                ) {
+                    Text(
+                        text = "没有账户？立即注册",
+                        color = Color(0xFF2196F3),
+                        fontSize = 16.sp
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+        }
     }
 }

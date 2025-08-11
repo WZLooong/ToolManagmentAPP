@@ -16,6 +16,7 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", vers
 androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 # 定义 androidx.activity:activity-compose 依赖项
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+
 [versions]
 agp = "8.1.0"
 kotlin = "1.9.20"

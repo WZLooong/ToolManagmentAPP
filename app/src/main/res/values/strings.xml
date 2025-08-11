@@ -1,3 +1,28 @@
 <resources>
-    <string name="app_name">ToolMagAPP</string>
+    <string name="app_name">Tool Management App</string>
+    
+    <!-- Login Screen -->
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">Login</string>
+    <string name="goto_register_button">Go to Register</string>
+    <string name="login_error">Login failed. Please check your credentials.</string>
+    
+    <!-- Register Screen -->
+    <string name="register_title">Register Account</string>
+    <string name="email_hint_register">Email</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint_register">Password</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="register_button">Register</string>
+    <string name="goto_login_button">Go to Login</string>
+    <string name="register_error">Registration failed. Please check your information.</string>
+    <string name="password_mismatch">Passwords do not match</string>
+    
+    <!-- Main Screen -->
+    <string name="welcome_message">Welcome to Tool Management</string>
+    <string name="tool_management">Tool Management</string>
+    <string name="borrow_return_management">Borrow/Return Management</string>
+    <string name="user_management">User Management</string>
+    <string name="logout">Logout</string>
 </resources>
