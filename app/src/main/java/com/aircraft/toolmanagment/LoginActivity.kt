@@ -1,28 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#FFFFFF"/>
+    <corners android:radius="8dp"/>
+    <stroke
+        android:width="1dp"
+        android:color="#CCCCCC"/>
+    <padding
+        android:left="8dp"
+        android:top="8dp"
+        android:right="8dp"
+        android:bottom="8dp"/>
+</shape>
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    android:padding="24dp"
+    tools:context=".LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Logo and title -->
+        <View
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/ic_launcher_background" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="工具管理系统"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="32dp"/>
+
+        <!-- Form area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="16dp">
+
+            <!-- Username/Employee ID field -->
+            <EditText
+                android:id="@+id/et_email_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="用户名或员工ID"
+                android:background="@drawable/edittext_background"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#888888"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:inputType="text"/>
+
+            <!-- Password field -->
+            <EditText
+                android:id="@+id/et_password_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="密码"
+                android:background="@drawable/edittext_background"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#888888"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:inputType="textPassword"/>
+
+            <!-- Login button -->
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="登录"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="#2196F3"
+                android:cornerRadius="8dp"/>
+
+            <!-- Register navigation button -->
+            <Button
+                android:id="@+id/btn_register_nav"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="没有账户？立即注册"
+                android:textSize="16sp"
+                android:textColor="#2196F3"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp"
+                android:backgroundTint="android:color/transparent"/>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
 package com.aircraft.toolmanagment
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import com.aircraft.toolmanagment.R
@@ -32,17 +127,41 @@ import kotlinx.coroutines.launch
 
 class LoginActivity : ComponentActivity() {
     private lateinit var userManagement: UserManagement
+    private lateinit var etEmail: EditText
+    private lateinit var etPassword: EditText
+    private lateinit var btnLogin: Button
+    private lateinit var btnRegisterNav: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+        
         userManagement = UserManagement(this)
         
-        setContent {
-            MaterialTheme {
-                LoginScreen { identifier, password ->
-                    login(identifier, password)
-                }
-            }
+        // 初始化视图组件
+        initViews()
+        
+        // 设置点击事件监听器
+        setupClickListeners()
+    }
+
+    private fun initViews() {
+        etEmail = findViewById(R.id.et_email_login)
+        etPassword = findViewById(R.id.et_password_login)
+        btnLogin = findViewById(R.id.btn_login)
+        btnRegisterNav = findViewById(R.id.btn_register_nav)
+    }
+
+    private fun setupClickListeners() {
+        btnLogin.setOnClickListener {
+            val identifier = etEmail.text.toString().trim()
+            val password = etPassword.text.toString()
+            login(identifier, password)
+        }
+
+        btnRegisterNav.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -88,139 +207,6 @@ class LoginActivity : ComponentActivity() {
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun LoginScreen(onLogin: (identifier: String, password: String) -> Unit) {
-    var identifier by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    
-    var identifierError by remember { mutableStateOf<String?>(null) }
-    var passwordError by remember { mutableStateOf<String?>(null) }
-
-    val scrollState = rememberScrollState()
-    val context = LocalContext.current
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Logo and title
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
-                contentDescription = "Logo",
-                modifier = Modifier
-                    .size(100.dp)
-                    .padding(top = 60.dp, bottom = 16.dp)
-            )
-
-            Text(
-                text = "工具管理系统",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 32.dp)
-            )
-
-            // Form area
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Username/Employee ID field
-                OutlinedTextField(
-                    value = identifier,
-                    onValueChange = { 
-                        identifier = it
-                        identifierError = null // Clear error when user types
-                    },
-                    label = { Text("用户名或员工ID") },
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = identifierError != null,
-                    supportingText = identifierError?.let { { Text(it) } },
-                    shape = RoundedCornerShape(8.dp)
-                )
-
-                // Password field
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { 
-                        password = it
-                        passwordError = null // Clear error when user types
-                    },
-                    label = { Text("密码") },
-                    modifier = Modifier.fillMaxWidth(),
-                    visualTransformation = PasswordVisualTransformation(),
-                    isError = passwordError != null,
-                    supportingText = passwordError?.let { { Text(it) } },
-                    shape = RoundedCornerShape(8.dp)
-                )
-
-                // Login button
-                Button(
-                    onClick = {
-                        // Reset errors
-                        identifierError = null
-                        passwordError = null
-
-                        var isValid = true
-
-                        // Validate identifier
-                        if (identifier.isBlank()) {
-                            identifierError = "请输入用户名或员工ID"
-                            isValid = false
-                        }
-
-                        // Validate password
-                        if (password.isBlank()) {
-                            passwordError = "请输入密码"
-                            isValid = false
-                        }
-
-                        if (isValid) {
-                            onLogin(identifier, password)
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2196F3),
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text(text = "登录", fontSize = 16.sp)
-                }
-                
-                // Register navigation button
-                TextButton(
-                    onClick = {
-                        val intent = Intent(context, RegisterActivity::class.java)
-                        context.startActivity(intent)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                ) {
-                    Text(
-                        text = "没有账户？立即注册",
-                        color = Color(0xFF2196F3),
-                        fontSize = 16.sp
-                    )
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

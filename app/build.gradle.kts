@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.compose") version "1.5.10"
     id("kotlin-kapt")
     id("androidx.room") version "2.6.1"
+    id("com.google.dagger.hilt.android")
 }
 
 // 排除gradle:gradle依赖以阻止源码分发下载
@@ -86,6 +87,10 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     // 添加MySQL JDBC驱动依赖
     implementation("mysql:mysql-connector-java:8.0.33")
+
+    // Hilt依赖
+    implementation(projectLibs.hilt.android)
+    kapt(projectLibs.hilt.compiler)
 
     androidTestImplementation(projectLibs.androidx.junit)
     androidTestImplementation(projectLibs.androidx.espresso.core)

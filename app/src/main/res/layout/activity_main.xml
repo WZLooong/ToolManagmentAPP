@@ -68,6 +68,21 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
+        android:id="@+id/btn_network_test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/network_test"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:backgroundTint="@color/secondary"
+        app:layout_constraintTop_toBottomOf="@+id/btn_user_management"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
         android:id="@+id/btn_logout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

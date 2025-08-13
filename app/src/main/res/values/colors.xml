@@ -6,4 +6,6 @@
     <color name="secondary">#4CAF50</color>
     <color name="background_material_light">#F5F5F5</color>
     <color name="gray">#CCCCCC</color>
+    <color name="success_color">#008000</color>
+    <color name="error_color">#FF0000</color>
 </resources>

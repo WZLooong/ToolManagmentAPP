@@ -1,0 +1,59 @@
+package com.aircraft.toolmanagment.domain
+
+import android.content.Context
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.aircraft.toolmanagment.data.repository.Repository
+import com.aircraft.toolmanagment.network.NetworkModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+/**
+ * ViewModel基类，提供通用功能
+ */
+open class BaseViewModel : ViewModel(), LifecycleObserver {
+    protected lateinit var repository: Repository
+    
+    /**
+     * 初始化Repository
+     */
+    protected fun initRepository(context: Context) {
+        if (!::repository.isInitialized) {
+            repository = Repository.getInstance(context, NetworkModule.apiService)
+        }
+    }
+    
+    /**
+     * 在IO线程中执行代码块
+     */
+    protected fun launchIO(
+        onError: ((Exception) -> Unit)? = null,
+        block: suspend CoroutineScope.() -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                block()
+            } catch (e: Exception) {
+                onError?.invoke(e)
+            }
+        }
+    }
+    
+    /**
+     * 在主线程中执行代码块
+     */
+    protected fun launchMain(
+        onError: ((Exception) -> Unit)? = null,
+        block: suspend CoroutineScope.() -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.Main) {
+            try {
+                block()
+            } catch (e: Exception) {
+                onError?.invoke(e)
+            }
+        }
+    }
+}

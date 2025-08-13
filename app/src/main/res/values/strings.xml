@@ -24,5 +24,6 @@
     <string name="tool_management">Tool Management</string>
     <string name="borrow_return_management">Borrow/Return Management</string>
     <string name="user_management">User Management</string>
+    <string name="network_test">Network Test</string>
     <string name="logout">Logout</string>
 </resources>
