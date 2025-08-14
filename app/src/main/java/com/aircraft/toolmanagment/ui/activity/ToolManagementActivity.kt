@@ -1,38 +1,51 @@
 package com.aircraft.toolmanagment.ui.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aircraft.toolmanagment.R
-import com.aircraft.toolmanagment.domain.viewmodel.ToolManagementViewModel
+import com.aircraft.toolmanagment.data.entity.Tool
+import com.aircraft.toolmanagment.domain.ToolManagementViewModel
+import com.aircraft.toolmanagment.ui.adapter.ToolsAdapter
+import com.aircraft.toolmanagment.util.ViewState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ToolManagementActivity : BaseActivity() {
     private val viewModel: ToolManagementViewModel by viewModels()
     private lateinit var etToolName: EditText
-    private lateinit var etToolModel: EditText
-    private lateinit var etToolQuantity: EditText
     private lateinit var btnAddTool: Button
     private lateinit var btnSearchTool: Button
     private lateinit var rvTools: RecyclerView
     private lateinit var toolsAdapter: ToolsAdapter
 
+    companion object {
+        private const val TAG = "ToolManagementActivity"
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
     override fun getLayoutRes(): Int = R.layout.activity_tool_management
 
     override fun initViews() {
         etToolName = findViewById(R.id.et_tool_name)
-        etToolModel = findViewById(R.id.et_tool_model)
-        etToolQuantity = findViewById(R.id.et_tool_quantity)
         btnAddTool = findViewById(R.id.btn_add_tool)
         btnSearchTool = findViewById(R.id.btn_search_tool)
         rvTools = findViewById(R.id.rv_tools)
 
         // 设置RecyclerView
-        toolsAdapter = ToolsAdapter()
+        toolsAdapter = ToolsAdapter(emptyList()) { tool ->
+            // 处理工具点击事件，这里可以显示详细信息或编辑界面
+            Toast.makeText(this, "点击了工具: ${tool.name}", Toast.LENGTH_SHORT).show()
+        }
         rvTools.layoutManager = LinearLayoutManager(this)
         rvTools.adapter = toolsAdapter
     }
@@ -48,84 +61,70 @@ class ToolManagementActivity : BaseActivity() {
     private fun setupClickListeners() {
         btnAddTool.setOnClickListener {
             val name = etToolName.text.toString().trim()
-            val model = etToolModel.text.toString().trim()
-            val quantityStr = etToolQuantity.text.toString().trim()
-            
-            if (name.isBlank()) {
-                showToast("请输入工具名称")
-                return@setOnClickListener
+            if (name.isNotEmpty()) {
+                viewModel.addTool(
+                    context = this,
+                    name = name,
+                    model = "",
+                    specification = "",
+                    quantity = 1,
+                    manufacturer = "",
+                    purchaseDate = null,
+                    storageLocation = "",
+                    barcode = "",
+                    status = "可用"
+                )
+                etToolName.text.clear()
+            } else {
+                Toast.makeText(this, "请输入工具名称", Toast.LENGTH_SHORT).show()
             }
-            
-            if (quantityStr.isBlank()) {
-                showToast("请输入工具数量")
-                return@setOnClickListener
-            }
-            
-            val quantity = quantityStr.toIntOrNull() ?: 0
-            
-            viewModel.addTool(
-                context = this,
-                name = name,
-                model = model.ifBlank { null },
-                specification = null,
-                quantity = quantity,
-                manufacturer = null,
-                purchaseDate = null,
-                storageLocation = null,
-                barcode = null,
-                status = "可用"
-            )
         }
-        
+
         btnSearchTool.setOnClickListener {
-            val keyword = etToolName.text.toString().trim()
-            viewModel.queryTools(this, if (keyword.isBlank()) null else keyword)
+            val name = etToolName.text.toString().trim()
+            viewModel.queryTools(this, if (name.isNotEmpty()) name else null)
         }
     }
 
     private fun observeViewModel() {
-        viewModel.toolsState.observe(this) { state ->
+        // 观察工具列表状态
+        viewModel.toolsState.observe(this, Observer { state ->
             when (state) {
-                is com.aircraft.toolmanagment.util.ViewState.Loading -> {
+                is ViewState.Loading -> {
                     // 可以显示加载指示器
+                    Log.d(TAG, "正在加载工具列表...")
                 }
-                is com.aircraft.toolmanagment.util.ViewState.Success -> {
-                    toolsAdapter.submitList(state.data)
+                is ViewState.Success<*> -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val tools = state.data as? List<Tool> ?: emptyList()
+                    Log.d(TAG, "工具列表加载成功，共 ${tools.size} 个工具")
+                    toolsAdapter.updateTools(tools)
                 }
-                is com.aircraft.toolmanagment.util.ViewState.Error -> {
-                    showToast("加载工具失败: ${state.message}")
+                is ViewState.Error -> {
+                    Log.e(TAG, "工具列表加载失败: ${state.message}")
+                    Toast.makeText(this, "加载失败: ${state.message}", Toast.LENGTH_SHORT).show()
                 }
             }
-        }
-        
-        viewModel.addToolState.observe(this) { state ->
+        })
+
+        // 观察添加工具状态
+        viewModel.addToolState.observe(this, Observer { state ->
             when (state) {
-                is com.aircraft.toolmanagment.util.ViewState.Loading -> {
-                    btnAddTool.isEnabled = false
-                    btnAddTool.text = "添加中..."
+                is ViewState.Loading -> {
+                    // 可以显示加载指示器
+                    Log.d(TAG, "正在添加工具...")
                 }
-                is com.aircraft.toolmanagment.util.ViewState.Success -> {
-                    btnAddTool.isEnabled = true
-                    btnAddTool.text = "添加工具"
-                    
-                    if (state.data) {
-                        showToast("工具添加成功")
-                        // 清空输入框
-                        etToolName.text.clear()
-                        etToolModel.text.clear()
-                        etToolQuantity.text.clear()
-                        // 重新加载工具列表
-                        viewModel.queryTools(this)
-                    } else {
-                        showToast("工具添加失败")
-                    }
+                is ViewState.Success<*> -> {
+                    Log.d(TAG, "工具添加成功")
+                    Toast.makeText(this, "工具添加成功", Toast.LENGTH_SHORT).show()
+                    // 重新加载工具列表
+                    viewModel.queryTools(this)
                 }
-                is com.aircraft.toolmanagment.util.ViewState.Error -> {
-                    btnAddTool.isEnabled = true
-                    btnAddTool.text = "添加工具"
-                    showToast("添加工具失败: ${state.message}")
+                is ViewState.Error -> {
+                    Log.e(TAG, "工具添加失败: ${state.message}")
+                    Toast.makeText(this, "添加失败: ${state.message}", Toast.LENGTH_SHORT).show()
                 }
             }
-        }
+        })
     }
 }

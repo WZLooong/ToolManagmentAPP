@@ -2,15 +2,19 @@ package com.aircraft.toolmanagment.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import com.aircraft.toolmanagment.R
 import com.aircraft.toolmanagment.domain.UserViewModel
 import com.aircraft.toolmanagment.util.ViewState
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RegisterActivity : BaseActivity() {
-    private lateinit var userViewModel: UserViewModel
+    private val userViewModel: UserViewModel by viewModels()
     private lateinit var etEmail: EditText
     private lateinit var etUsername: EditText
     private lateinit var etPassword: EditText
@@ -20,7 +24,6 @@ class RegisterActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initViewModel()
         observeViewModel()
     }
 
@@ -33,14 +36,39 @@ class RegisterActivity : BaseActivity() {
         etConfirmPassword = findViewById(R.id.et_confirm_password_register)
         btnRegister = findViewById(R.id.btn_register)
         btnLoginNav = findViewById(R.id.btn_login_nav)
+        
+        // 添加输入监听器
+        addInputListeners()
     }
 
     override fun initData() {
         setupClickListeners()
     }
 
-    private fun initViewModel() {
-        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+    private fun addInputListeners() {
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                validateInput()
+            }
+        }
+        
+        etEmail.addTextChangedListener(textWatcher)
+        etUsername.addTextChangedListener(textWatcher)
+        etPassword.addTextChangedListener(textWatcher)
+        etConfirmPassword.addTextChangedListener(textWatcher)
+    }
+
+    private fun validateInput() {
+        val email = etEmail.text.toString().trim()
+        val username = etUsername.text.toString().trim()
+        val password = etPassword.text.toString().trim()
+        val confirmPassword = etConfirmPassword.text.toString().trim()
+        btnRegister.isEnabled = email.isNotBlank() && 
+                              username.isNotBlank() && 
+                              password.isNotBlank() && 
+                              confirmPassword.isNotBlank()
     }
 
     private fun observeViewModel() {
@@ -83,8 +111,34 @@ class RegisterActivity : BaseActivity() {
             val password = etPassword.text.toString().trim()
             val confirmPassword = etConfirmPassword.text.toString().trim()
             
+            // 输入验证
+            if (email.isBlank()) {
+                showToast("请输入邮箱")
+                return@setOnClickListener
+            }
+            
+            if (username.isBlank()) {
+                showToast("请输入用户名")
+                return@setOnClickListener
+            }
+            
+            if (password.isBlank()) {
+                showToast("请输入密码")
+                return@setOnClickListener
+            }
+            
+            if (confirmPassword.isBlank()) {
+                showToast("请确认密码")
+                return@setOnClickListener
+            }
+            
             if (password != confirmPassword) {
                 showToast("密码不匹配")
+                return@setOnClickListener
+            }
+            
+            if (password.length < 6) {
+                showToast("密码长度至少6位")
                 return@setOnClickListener
             }
             

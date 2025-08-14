@@ -7,7 +7,7 @@ import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aircraft.toolmanagment.R
-import com.aircraft.toolmanagment.domain.viewmodel.BorrowReturnViewModel
+import com.aircraft.toolmanagment.domain.BorrowReturnViewModel
 import com.aircraft.toolmanagment.ui.adapter.BorrowRecordsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -75,9 +75,13 @@ class BorrowReturnActivity : BaseActivity() {
             // 创建借出记录
             val borrowRecord = com.aircraft.toolmanagment.data.entity.BorrowReturnRecord(
                 toolId = toolId,
-                userId = userId,
+                borrowerId = userId,
                 borrowTime = System.currentTimeMillis(),
-                returnTime = null
+                expectedReturnTime = 0,
+                actualReturnTime = null,
+                borrowReason = "",
+                approvalStatus = "",
+                rejectionReason = ""
             )
             
             viewModel.borrowTool(this, borrowRecord)
@@ -110,8 +114,8 @@ class BorrowReturnActivity : BaseActivity() {
                 is com.aircraft.toolmanagment.util.ViewState.Loading -> {
                     // 可以显示加载指示器
                 }
-                is com.aircraft.toolmanagment.util.ViewState.Success -> {
-                    borrowRecordsAdapter.submitList(state.data)
+                is com.aircraft.toolmanagment.util.ViewState.Success<*> -> {
+                    borrowRecordsAdapter.submitList(state.data as List<com.aircraft.toolmanagment.data.entity.BorrowReturnRecord>)
                 }
                 is com.aircraft.toolmanagment.util.ViewState.Error -> {
                     showToast("加载借还记录失败: ${state.message}")
@@ -125,11 +129,11 @@ class BorrowReturnActivity : BaseActivity() {
                     btnBorrow.isEnabled = false
                     btnBorrow.text = "借出中..."
                 }
-                is com.aircraft.toolmanagment.util.ViewState.Success -> {
+                is com.aircraft.toolmanagment.util.ViewState.Success<*> -> {
                     btnBorrow.isEnabled = true
                     btnBorrow.text = "借出"
                     
-                    if (state.data) {
+                    if (state.data as Boolean) {
                         showToast("工具借出成功")
                         // 清空输入框
                         etToolId.text.clear()
@@ -154,11 +158,11 @@ class BorrowReturnActivity : BaseActivity() {
                     btnReturn.isEnabled = false
                     btnReturn.text = "归还中..."
                 }
-                is com.aircraft.toolmanagment.util.ViewState.Success -> {
+                is com.aircraft.toolmanagment.util.ViewState.Success<*> -> {
                     btnReturn.isEnabled = true
                     btnReturn.text = "归还"
                     
-                    if (state.data) {
+                    if (state.data as Boolean) {
                         showToast("工具归还成功")
                         // 清空输入框
                         etToolId.text.clear()

@@ -8,27 +8,25 @@
 
 ```
 com.aircraft.toolmanagment
+├── config/                 # 配置相关
+│   └── Config.kt           # 应用配置常量
 ├── ui/                     # UI层
 │   ├── activity/           # Activity类
-│   ├── fragment/           # Fragment类
-│   ├── adapter/            # RecyclerView适配器等
-│   └── custom/             # 自定义UI组件
+│   └── adapter/            # RecyclerView适配器等
 ├── data/                   # 数据层
-│   ├── local/              # 本地数据相关
-│   │   ├── dao/            # DAO接口
-│   │   ├── entity/         # Room实体类
-│   │   └── database/       # 数据库相关
+│   ├── di/                 # 依赖注入模块
+│   ├── entity/             # 实体类和DTO
 │   ├── remote/             # 远程数据相关
-│   │   ├── api/            # API接口和网络相关类
-│   │   ├── dto/            # 数据传输对象
-│   │   └── model/          # 网络数据模型
+│   │   └── api/            # API接口和网络相关类
 │   ├── repository/         # 数据仓库
-│   └── di/                 # 依赖注入模块
+│   ├── AppDatabase.kt      # 数据库实例
+│   ├── DAOs                # 各种数据访问对象
+│   └── ...                 # 其他数据相关
 ├── domain/                 # 业务逻辑层
-│   ├── model/              # 领域模型
-│   ├── usecase/            # 业务用例
-│   └── viewmodel/          # ViewModel类
-└── util/                   # 工具类
+│   ├── BaseViewModel.kt    # ViewModel基类
+│   ├── ViewModels          # 各种ViewModel实现
+├── util/                   # 工具类
+├── *.kt                    # 顶层业务管理类
 ```
 
 ## 架构层次
@@ -37,18 +35,24 @@ com.aircraft.toolmanagment
 - **BaseActivity**: 所有Activity的基类，提供通用功能
 - **具体Activity**: 继承BaseActivity，负责UI展示和用户交互
 - **Adapter**: RecyclerView适配器，负责列表数据展示
-- **Fragment**: UI片段（将来添加）
 
 ### 2. 数据层 (Data Layer)
 - **本地数据**: 使用Room数据库进行本地数据持久化
 - **远程数据**: 通过Retrofit与后端API通信
 - **Repository**: 数据仓库，整合本地和远程数据源，提供统一的数据访问接口
 - **依赖注入**: 使用Hilt管理依赖关系
+- **网络模块**: 统一的网络请求配置和API接口定义
 
 ### 3. 业务逻辑层 (Domain Layer)
 - **ViewModel**: 处理UI相关的业务逻辑，暴露状态给View层
-- **UseCase**: 独立的业务用例
-- **Model**: 领域模型
+- **顶层业务管理类**: 封装特定业务逻辑的管理类
+
+### 4. 配置层
+- **Config**: 应用配置常量，如API基础URL等
+
+### 5. 工具层
+- **ViewState**: UI状态封装类
+- **其他工具类**: 辅助工具和扩展函数
 
 ## 设计模式
 
@@ -81,6 +85,18 @@ com.aircraft.toolmanagment
 - ApiService远程数据访问接口
 - UserRepository、ToolRepository、BorrowReturnRepository等具体业务仓库
 
+### NetworkModule
+网络模块，提供统一的网络请求配置：
+- 配置OkHttpClient（超时、拦截器等）
+- 提供Retrofit实例
+- 创建ApiService实例
+
+### ApiService
+定义与后端通信的API接口：
+- 用户认证相关接口
+- 工具管理相关接口
+- 借还记录相关接口
+
 ### NetworkResult
 网络请求结果封装类，包含：
 - Loading: 加载状态
@@ -93,6 +109,11 @@ UI状态封装类，用于ViewModel向View层暴露状态：
 - Loading: 加载状态
 - Success: 成功状态，携带数据
 - Error: 错误状态，携带错误消息
+
+### 顶层业务管理类
+- UserManagement: 用户相关业务逻辑封装
+- ToolManagement: 工具相关业务逻辑封装
+- BorrowReturnManagement: 借还相关业务逻辑封装
 
 ## 数据流向
 
@@ -111,9 +132,11 @@ UI (Activity) -> ViewModel -> Repository -> DAO/API -> Repository -> ViewModel -
 
 项目使用Hilt进行依赖注入：
 
-1. **Application类**: [ToolManagementApplication](file://i:\AndroidStudioProject\ToolManagmentAPP\app\src\main\java\com\aircraft\toolmanagment\ToolManagementApplication.kt) 使用@HiltAndroidApp注解
-2. **模块**: [RepositoryModule](file://i:\AndroidStudioProject\ToolManagmentAPP\app\src\main\java\com\aircraft\toolmanagment\data\di\RepositoryModule.kt) 提供Repository依赖
-3. **注入**: ViewModel使用@HiltViewModel注解，Activity使用@AndroidEntryPoint注解
+1. **Application类**: [ToolManagementApplication](file://h:\APP\ToolManagmentAPP\app\src\main\java\com\aircraft\toolmanagment\ToolManagementApplication.kt) 使用@HiltAndroidApp注解
+2. **模块**: [RepositoryModule](file://h:\APP\ToolManagmentAPP\app\src\main\java\com\aircraft\toolmanagment\data\di\RepositoryModule.kt) 提供Repository依赖
+3. **注入**: Activity使用@AndroidEntryPoint注解
+
+*注意：目前ViewModel中尚未完全使用Hilt依赖注入，而是手动获取Repository实例，这是需要改进的地方。*
 
 ## 最佳实践
 
@@ -129,6 +152,7 @@ UI (Activity) -> ViewModel -> Repository -> DAO/API -> Repository -> ViewModel -
 1. **单元测试**: 使用JUnit和Mockito测试业务逻辑
 2. **UI测试**: 使用Espresso测试用户界面交互
 3. **集成测试**: 验证各组件之间的协作
+4. **网络测试**: 使用专门的测试类验证网络连接和API接口
 
 ## 未来改进方向
 
@@ -138,3 +162,5 @@ UI (Activity) -> ViewModel -> Repository -> DAO/API -> Repository -> ViewModel -
 4. 实现离线支持
 5. 增加更多的单元测试和UI测试
 6. 优化UI/UX设计
+7. 完善Hilt依赖注入的使用，确保ViewModel也通过依赖注入获取Repository
+8. 重构顶层业务管理类，明确其在架构中的作用或将其整合到合适的层中

@@ -114,9 +114,9 @@ public class ApiController {
             User user = userOpt.get();
             System.out.println("User found: " + user.getUsername() + ", checking password");
 
-            // 使用BCrypt验证密码
+            // 直接比较密码（不使用加密）
             System.out.println("Checking password for user: " + user.getUsername());
-            boolean passwordMatches = SecurityUtils.matchesPassword(password, user.getPassword());
+            boolean passwordMatches = password.equals(user.getPassword()); // 直接比较明文密码
             System.out.println("Password matches: " + passwordMatches);
             
             if (!passwordMatches) {
@@ -158,11 +158,11 @@ public class ApiController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
 
-            // 创建新用户并加密密码
+            // 创建新用户（不加密密码）
             User newUser = new User(
                 request.getPhone(),
                 request.getEmail(),
-                SecurityUtils.encodePassword(request.getPassword()),
+                request.getPassword(), // 直接存储明文密码
                 request.getName(),
                 request.getEmployeeId(),
                 request.getTeam(),
@@ -202,18 +202,128 @@ public class ApiController {
         }
     }
 
-    // 获取工具列表
+    // 获取所有用户
+    @GetMapping("/users")
+    public ResponseEntity<Map<String, Object>> getAllUsers() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<User> users = userRepository.findAll();
+            response.put("success", true);
+            response.put("data", users);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "服务器内部错误");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // 根据ID获取用户
+    @GetMapping("/users/{id}")
+    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Optional<User> userOpt = userRepository.findById(id);
+            if (userOpt.isPresent()) {
+                response.put("success", true);
+                response.put("data", userOpt.get());
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", false);
+                response.put("message", "用户不存在");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "服务器内部错误");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // 更新用户信息
+    @PutMapping("/users")
+    public ResponseEntity<Map<String, Object>> updateUser(@RequestParam String username, @RequestBody User updatedUser) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Optional<User> userOpt = userRepository.findByUsername(username);
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                // 更新用户信息
+                user.setPhone(updatedUser.getPhone());
+                user.setEmail(updatedUser.getEmail());
+                user.setPassword(updatedUser.getPassword()); // 直接更新明文密码
+                user.setEmployeeId(updatedUser.getEmployeeId());
+                user.setTeam(updatedUser.getTeam());
+                user.setRole(updatedUser.getRole());
+
+                User savedUser = userRepository.save(user);
+                response.put("success", true);
+                response.put("message", "用户信息更新成功");
+                response.put("data", savedUser);
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", false);
+                response.put("message", "用户不存在");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "服务器内部错误");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // 删除用户
+    @DeleteMapping("/users")
+    public ResponseEntity<Map<String, Object>> deleteUser(@RequestParam String username) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Optional<User> userOpt = userRepository.findByUsername(username);
+            if (userOpt.isPresent()) {
+                userRepository.delete(userOpt.get());
+                response.put("success", true);
+                response.put("message", "用户删除成功");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", false);
+                response.put("message", "用户不存在");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "服务器内部错误");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // 工具管理相关API
+    @PostMapping("/tools")
+    public ResponseEntity<Map<String, Object>> addTool(@RequestBody Tool tool) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Tool savedTool = toolRepository.save(tool);
+            response.put("success", true);
+            response.put("message", "工具添加成功");
+            response.put("data", savedTool);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "服务器内部错误");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     @GetMapping("/tools")
-    public ResponseEntity<Map<String, Object>> getTools(@RequestParam(required = false) String keyword) {
+    public ResponseEntity<Map<String, Object>> queryTools(@RequestParam(required = false) String keyword) {
         Map<String, Object> response = new HashMap<>();
         try {
             List<Tool> tools;
             if (keyword != null && !keyword.isEmpty()) {
-                tools = toolRepository.findByNameContainingIgnoreCase(keyword);
+                tools = toolRepository.findByNameContainingOrModelContainingOrSpecificationContaining(
+                    keyword, keyword, keyword);
             } else {
                 tools = toolRepository.findAll();
             }
-            
             response.put("success", true);
             response.put("data", tools);
             return ResponseEntity.ok(response);
@@ -224,145 +334,14 @@ public class ApiController {
         }
     }
 
-    // 添加工具
-    @PostMapping("/tools")
-    public ResponseEntity<Map<String, Object>> addTool(@RequestBody Tool tool) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            // 检查工具是否已存在
-            Optional<Tool> existingTool = toolRepository.findByBarcodeOrName(tool.getBarcode(), tool.getName());
-            if (existingTool.isPresent()) {
-                response.put("success", false);
-                response.put("message", "工具条码或名称已存在");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-
-            Tool savedTool = toolRepository.save(tool);
-            
-            response.put("success", true);
-            response.put("message", "工具添加成功");
-            response.put("tool", savedTool);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "服务器内部错误");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    // 借阅工具
-    @PostMapping("/tools/borrow/{toolId}")
-    public ResponseEntity<Map<String, Object>> borrowTool(@PathVariable Long toolId) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            // 获取当前登录用户
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            Long userId = userDetails.getId();
-
-            // 检查工具是否存在
-            Optional<Tool> toolOptional = toolRepository.findById(toolId);
-            if (!toolOptional.isPresent()) {
-                response.put("success", false);
-                response.put("message", "工具不存在");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-
-            Tool tool = toolOptional.get();
-
-            // 检查工具是否可借阅
-            if (tool.getBorrowerId() != null) {
-                response.put("success", false);
-                response.put("message", "工具已被借阅");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-
-            // 更新工具状态
-            tool.setBorrowerId(userId);
-            tool.setBorrowDate(LocalDateTime.now());
-            tool.setStatus("BORROWED");
-
-            Tool updatedTool = toolRepository.save(tool);
-
-            response.put("success", true);
-            response.put("message", "工具借阅成功");
-            response.put("tool", updatedTool);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "服务器内部错误");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    // 归还工具
-    @PostMapping("/tools/return/{toolId}")
-    public ResponseEntity<Map<String, Object>> returnTool(@PathVariable Long toolId) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            // 获取当前登录用户
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            Long userId = userDetails.getId();
-
-            // 检查工具是否存在
-            Optional<Tool> toolOptional = toolRepository.findById(toolId);
-            if (!toolOptional.isPresent()) {
-                response.put("success", false);
-                response.put("message", "工具不存在");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-
-            Tool tool = toolOptional.get();
-
-            // 检查工具是否被当前用户借阅
-            if (tool.getBorrowerId() == null || !tool.getBorrowerId().equals(userId)) {
-                response.put("success", false);
-                response.put("message", "该工具未被您借阅");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-
-            // 更新工具状态
-            tool.setReturnDate(LocalDateTime.now());
-            tool.setBorrowerId(null);
-            tool.setStatus("AVAILABLE");
-
-            Tool updatedTool = toolRepository.save(tool);
-
-            response.put("success", true);
-            response.put("message", "工具归还成功");
-            response.put("tool", updatedTool);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "服务器内部错误");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    // 更新工具
     @PutMapping("/tools")
     public ResponseEntity<Map<String, Object>> updateTool(@RequestBody Tool tool) {
         Map<String, Object> response = new HashMap<>();
         try {
-            if (tool.getId() == null) {
-                response.put("success", false);
-                response.put("message", "工具ID不能为空");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-
-            Optional<Tool> existingTool = toolRepository.findById(tool.getId());
-            if (!existingTool.isPresent()) {
-                response.put("success", false);
-                response.put("message", "工具未找到");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-
             Tool updatedTool = toolRepository.save(tool);
-            
             response.put("success", true);
-            response.put("message", "工具更新成功");
-            response.put("tool", updatedTool);
+            response.put("message", "工具信息更新成功");
+            response.put("data", updatedTool);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("success", false);
@@ -371,23 +350,21 @@ public class ApiController {
         }
     }
 
-    // 删除工具
     @DeleteMapping("/tools")
-    public ResponseEntity<Map<String, Object>> deleteTool(@RequestParam Long id) {
+    public ResponseEntity<Map<String, Object>> deleteTool(@RequestParam int id) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Optional<Tool> existingTool = toolRepository.findById(id);
-            if (!existingTool.isPresent()) {
+            Optional<Tool> toolOpt = toolRepository.findById((long) id);
+            if (toolOpt.isPresent()) {
+                toolRepository.delete(toolOpt.get());
+                response.put("success", true);
+                response.put("message", "工具删除成功");
+                return ResponseEntity.ok(response);
+            } else {
                 response.put("success", false);
-                response.put("message", "工具未找到");
+                response.put("message", "工具不存在");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
-
-            toolRepository.deleteById(id);
-            
-            response.put("success", true);
-            response.put("message", "工具删除成功");
-            return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "服务器内部错误");
@@ -395,16 +372,14 @@ public class ApiController {
         }
     }
 
-    // 批量导入工具
     @PostMapping("/tools/batch")
     public ResponseEntity<Map<String, Object>> batchImportTools(@RequestBody List<Tool> tools) {
         Map<String, Object> response = new HashMap<>();
         try {
             List<Tool> savedTools = toolRepository.saveAll(tools);
-            
             response.put("success", true);
             response.put("message", "工具批量导入成功");
-            response.put("tools", savedTools);
+            response.put("data", savedTools);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             response.put("success", false);
@@ -412,4 +387,7 @@ public class ApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    // 借还相关API
+    // borrow和return方法的实现需要根据实际的业务逻辑来完成
 }

@@ -28,7 +28,22 @@ class UserRepository(
                 localDataSource.insertUser(response.data.user)
                 NetworkResult.Success(response.data.user)
             } else {
-                NetworkResult.Error(null, response.message ?: "登录失败")
+                // Provide a default error message if server returns empty message
+                val errorMessage = if (response.message.isNullOrBlank()) {
+                    when (response.success) {
+                        false -> {
+                            // 对于401错误，提供更具体的错误消息
+                            "认证失败，请检查用户名和密码"
+                        }
+                        else -> "登录失败"
+                    }
+                } else {
+                    response.message
+                }
+                NetworkResult.Error(
+                    if (response.success == false) 401 else null, 
+                    errorMessage
+                )
             }
         } catch (e: Exception) {
             NetworkExceptionHandler.handle(e)

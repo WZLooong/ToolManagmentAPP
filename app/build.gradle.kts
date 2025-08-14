@@ -64,36 +64,36 @@ android {
 dependencies {
 
     // 统一依赖格式，移除多余空格
-    implementation(projectLibs.androidx.ui)
-    implementation(projectLibs.androidx.ui.tooling.preview)
-    implementation(projectLibs.androidx.core.ktx)
-    implementation(projectLibs.androidx.ui.tooling)
-    implementation(projectLibs.androidx.appcompat)
-    implementation(projectLibs.material)
-    implementation(projectLibs.androidx.activity)
-    implementation(projectLibs.androidx.constraintlayout)
-    implementation(projectLibs.androidx.room.runtime.android)
-    implementation(projectLibs.androidx.room.ktx)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.room.runtime.android)
+    implementation(libs.androidx.room.ktx)
     kapt("androidx.room:room-compiler:2.6.1")
-    implementation(projectLibs.androidx.runtime)
-    implementation(projectLibs.androidx.material3)
-    testImplementation(projectLibs.classic.junit)
-    implementation(projectLibs.androidx.activity.compose)
+    implementation(libs.androidx.runtime)
+    implementation(libs.androidx.material3)
+    testImplementation(libs.classic.junit)
+    implementation(libs.androidx.activity.compose)
 
     implementation("androidx.compose.material:material:1.6.1")
     // 添加远程数据库连接所需依赖
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0") // 恢复原来的版本
     // 添加MySQL JDBC驱动依赖
     implementation("mysql:mysql-connector-java:8.0.33")
 
     // Hilt依赖
-    implementation(projectLibs.hilt.android)
-    kapt(projectLibs.hilt.compiler)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
-    androidTestImplementation(projectLibs.androidx.junit)
-    androidTestImplementation(projectLibs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 
     // 移除重复的 Jetpack Compose 依赖
     //0427更新

@@ -6,4 +6,7 @@
     </style>
 
     <style name="Theme.ToolMagAPP" parent="Base.Theme.ToolMagAPP" />
+    
+    <!-- 添加缺失的主题定义 -->
+    <style name="Theme.ToolManagement" parent="Base.Theme.ToolMagAPP" />
 </resources>

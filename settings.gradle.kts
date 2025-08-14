@@ -20,12 +20,6 @@ dependencyResolutionManagement {
         maven { url = uri("https://mirrors.cloud.tencent.com/repository/maven-public/") }
     }
 
-    // Using a different name for the version catalog to avoid conflicts
-    versionCatalogs {
-        create("projectLibs") {
-            from(files("gradle/libs.versions.toml"))
-        }
-    }
 
 }
 

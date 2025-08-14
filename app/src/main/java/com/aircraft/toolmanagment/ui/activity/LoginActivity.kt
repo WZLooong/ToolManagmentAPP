@@ -2,15 +2,19 @@ package com.aircraft.toolmanagment.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import com.aircraft.toolmanagment.R
 import com.aircraft.toolmanagment.domain.UserViewModel
 import com.aircraft.toolmanagment.util.ViewState
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginActivity : BaseActivity() {
-    private lateinit var userViewModel: UserViewModel
+    private val userViewModel: UserViewModel by viewModels()
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: Button
@@ -18,7 +22,6 @@ class LoginActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initViewModel()
         observeViewModel()
     }
 
@@ -29,14 +32,35 @@ class LoginActivity : BaseActivity() {
         etPassword = findViewById(R.id.et_password_login)
         btnLogin = findViewById(R.id.btn_login)
         btnRegisterNav = findViewById(R.id.btn_register_nav)
+        
+        // 添加输入监听器
+        addInputListeners()
+        
+        // 初始化按钮状态
+        btnLogin.isEnabled = false
     }
 
     override fun initData() {
         setupClickListeners()
     }
 
-    private fun initViewModel() {
-        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+    private fun addInputListeners() {
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                validateInput()
+            }
+        }
+        
+        etEmail.addTextChangedListener(textWatcher)
+        etPassword.addTextChangedListener(textWatcher)
+    }
+
+    private fun validateInput() {
+        val identifier = etEmail.text.toString().trim()
+        val password = etPassword.text.toString()
+        btnLogin.isEnabled = identifier.isNotBlank() && password.isNotBlank()
     }
 
     private fun observeViewModel() {
@@ -59,14 +83,26 @@ class LoginActivity : BaseActivity() {
                         startActivity(intent)
                         finish()
                     } else {
-                        showToast("登录失败，请检查用户名和密码")
+                        // 用户不存在，跳转到注册页面
+                        showToast("用户不存在，请先注册")
+                        val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
+                        startActivity(intent)
                     }
                 }
                 is ViewState.Error -> {
                     // 恢复按钮状态
                     btnLogin.isEnabled = true
                     btnLogin.text = "登录"
-                    showToast("登录失败: ${state.message}")
+                    // 根据错误信息判断是否跳转到注册页面
+                    if (state.message?.contains("用户不存在") == true || 
+                        state.message?.contains("不存在") == true) {
+                        showToast("用户不存在，请先注册")
+                        val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        // 显示更详细的错误信息
+                        showToast("登录失败: ${state.message}")
+                    }
                 }
             }
         }
@@ -76,6 +112,18 @@ class LoginActivity : BaseActivity() {
         btnLogin.setOnClickListener {
             val identifier = etEmail.text.toString().trim()
             val password = etPassword.text.toString()
+            
+            // 输入验证
+            if (identifier.isBlank()) {
+                showToast("请输入用户名/员工ID")
+                return@setOnClickListener
+            }
+            
+            if (password.isBlank()) {
+                showToast("请输入密码")
+                return@setOnClickListener
+            }
+            
             userViewModel.login(this, identifier, password)
         }
 

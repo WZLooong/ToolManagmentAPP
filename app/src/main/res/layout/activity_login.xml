@@ -23,16 +23,16 @@
         android:id="@+id/et_email_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/email_hint"
+        android:hint="用户名/员工ID"
         android:padding="12dp"
         android:background="@drawable/edit_text_background"
-        android:inputType="textEmailAddress"
+        android:inputType="text"
         app:layout_constraintTop_toBottomOf="@+id/tv_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/et_password_login"
         android:layout_marginBottom="16dp"
-        android:autofillHints="emailAddress" />
+        android:autofillHints="username" />
 
     <EditText
         android:id="@+id/et_password_login"

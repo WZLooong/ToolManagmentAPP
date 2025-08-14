@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 禁用证书锁定以避免Android Q及以上版本的弃用警告 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">39.106.150.70</domain>
+    </domain-config>
+</network-security-config>

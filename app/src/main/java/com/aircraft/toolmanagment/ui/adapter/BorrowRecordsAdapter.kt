@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -36,25 +37,31 @@ class BorrowRecordsAdapter : ListAdapter<BorrowReturnRecord, BorrowRecordsAdapte
             tvRecordId.text = "记录ID: ${record.id}"
             
             // 设置状态和颜色
-            if (record.returnTime != null) {
+            if (record.actualReturnTime != null) {
                 tvRecordStatus.text = "已归还"
                 tvRecordStatus.setTextColor(
-                    itemView.context.getColor(android.R.color.holo_green_dark)
-                )
+                ContextCompat.getColor(itemView.context, android.R.color.holo_green_dark)
+            )
             } else {
                 tvRecordStatus.text = "未归还"
                 tvRecordStatus.setTextColor(
-                    itemView.context.getColor(android.R.color.holo_orange_dark)
-                )
+                ContextCompat.getColor(itemView.context, android.R.color.holo_orange_dark)
+            )
             }
             
             tvToolInfo.text = "工具ID: ${record.toolId}"
-            tvUserInfo.text = "用户ID: ${record.userId}"
+            tvUserInfo.text = "用户ID: ${record.borrowerId}"
             
             // 格式化时间
             val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-            tvBorrowTime.text = "借出时间: ${record.borrowTime?.let { dateFormat.format(Date(it)) } ?: "未知"}"
-            tvReturnTime.text = "归还时间: ${record.returnTime?.let { dateFormat.format(Date(it)) } ?: "未归还"}"
+            // 优化：borrowTime是非空类型，默认值为0，检查是否为0来决定显示内容
+            tvBorrowTime.text = if (record.borrowTime > 0) {
+                "借出时间: ${dateFormat.format(Date(record.borrowTime))}"
+            } else {
+                "借出时间: 未知"
+            }
+            // actualReturnTime是可空类型，使用原有的Elvis操作符处理
+            tvReturnTime.text = "归还时间: ${record.actualReturnTime?.let { dateFormat.format(Date(it)) } ?: "未归还"}"
         }
     }
 

@@ -2,28 +2,28 @@
     <string name="app_name">Tool Management App</string>
     
     <!-- Login Screen -->
-    <string name="email_hint">Email</string>
-    <string name="password_hint">Password</string>
-    <string name="login_button">Login</string>
-    <string name="goto_register_button">Go to Register</string>
-    <string name="login_error">Login failed. Please check your credentials.</string>
+    <string name="email_hint">用户名/员工ID</string>
+    <string name="password_hint">密码</string>
+    <string name="login_button">登录</string>
+    <string name="goto_register_button">前往注册</string>
+    <string name="login_error">登录失败，请检查您的凭据。</string>
     
     <!-- Register Screen -->
-    <string name="register_title">Register Account</string>
-    <string name="email_hint_register">Email</string>
-    <string name="username_hint">Username</string>
-    <string name="password_hint_register">Password</string>
-    <string name="confirm_password_hint">Confirm Password</string>
-    <string name="register_button">Register</string>
-    <string name="goto_login_button">Go to Login</string>
-    <string name="register_error">Registration failed. Please check your information.</string>
-    <string name="password_mismatch">Passwords do not match</string>
+    <string name="register_title">注册账户</string>
+    <string name="email_hint_register">邮箱</string>
+    <string name="username_hint">用户名</string>
+    <string name="password_hint_register">密码</string>
+    <string name="confirm_password_hint">确认密码</string>
+    <string name="register_button">注册</string>
+    <string name="goto_login_button">前往登录</string>
+    <string name="register_error">注册失败，请检查您的信息。</string>
+    <string name="password_mismatch">密码不匹配</string>
     
     <!-- Main Screen -->
-    <string name="welcome_message">Welcome to Tool Management</string>
-    <string name="tool_management">Tool Management</string>
-    <string name="borrow_return_management">Borrow/Return Management</string>
-    <string name="user_management">User Management</string>
-    <string name="network_test">Network Test</string>
-    <string name="logout">Logout</string>
+    <string name="welcome_message">欢迎使用工具管理系统</string>
+    <string name="tool_management">工具管理</string>
+    <string name="borrow_return_management">借还管理</string>
+    <string name="user_management">用户管理</string>
+    <string name="network_test" translatable="false">网络测试</string>
+    <string name="logout">退出登录</string>
 </resources>

@@ -4,4 +4,7 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+    
+    <!-- 添加缺失的主题定义 -->
+    <style name="Theme.ToolManagement" parent="Base.Theme.ToolMagAPP" />
 </resources>
